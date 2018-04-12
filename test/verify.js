@@ -32,6 +32,14 @@ describe('Verify',function() {
 				console.log('example');
 			}
 		}
+		var broken_o = {
+			name : 'broken',
+			type : 'broken',
+			i : {'a':0,'b':0,'c':0},
+			run : function() {
+				console.log('example');
+			}
+		}
 
 		it('Should fail without name',function() {
 			assert.ok(!verify(broken_name),'Should fail without name');
@@ -40,7 +48,10 @@ describe('Verify',function() {
 			assert.ok(!verify(broken_type),'Should fail without type');
 		});
 		it('Should fail without i',function() {
-			assert.ok(!verify(broken_i),'Should fail without name');
+			assert.ok(!verify(broken_i),'Should fail without i');
+		});
+		it('Should fail without o',function() {
+			assert.ok(!verify(broken_o),'Should fail without o');
 		});
 	});
 });
