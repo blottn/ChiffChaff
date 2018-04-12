@@ -1,5 +1,9 @@
-var assert = require('assert');
-var verify = require('../verify.js');
+const assert = require('assert');
+const verify = require('../verify.js');
+const reserved = require('../reserved.js');
+
+const example_types = [{}, 123, 'mystring',[]];
+
 describe('Verify',function() {
 	it('Should import',function() {
 		assert.ok(verify);
@@ -18,13 +22,15 @@ describe('Verify',function() {
 			it('Should fail without name',function() {
 				assert.ok(!verify(broken_name),'Passed without name');
 			});
-			it('Should fail when not a string',function() {
-				broken_name['name'] = ['test'];
-				assert.ok(!verify(broken_name),'Passed with name as array');
+			it('Should fail when name not a string',function() {
+				for (var i in example_types) {
+					broken_name['name'] = example_types[i];
+					assert.ok(!verify(broken_name),'Passed with name as type: ' + (typeof example_types[i]));
+				}
 			});
 		});
+
 		describe('Type',function() {
-			
 			var broken_type = {
 				name : 'broken',
 				i : {'a':0,'b':0,'c':0},
@@ -35,6 +41,19 @@ describe('Verify',function() {
 			};
 			it('Should fail without type',function() {
 				assert.ok(!verify(broken_type),'Passed without type');
+			});
+			it('Should fail when type isn\'t string', function() {
+				for (var i in example_types) {
+					broken_type['type'] = example_types[i];
+					assert.ok(!verify(broken_type),'Passed with type as ' + (typeof example_types[i]));
+				}
+				assert.ok(!verify(broken_type),'Passed with type as array');
+			});
+			it('Should fail when type is a reserved type', function() {
+				for (var i in reserved) {
+					broken_type['type'] = reserved[i];
+					assert.ok(!verify(broken_type),'Passed with type set to reserved value: ' + reserved[i]);
+				}
 			});
 		});
 		
