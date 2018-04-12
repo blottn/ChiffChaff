@@ -15,7 +15,7 @@ describe('Verify',function() {
 		};
 	
 		it('should fail without name',function() {
-			assert.ok(!broken.name, broken.name);
+			assert.ok(!verify(broken),broken.name);
 		});
 	});
 });
