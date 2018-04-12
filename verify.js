@@ -1,5 +1,5 @@
 function verify(obj) {
-	if (("name" in obj && !typeof obj.name === "string") || !("name" in obj)) {	// check name field
+	if (("name" in obj && !(typeof obj.name === "string")) || !("name" in obj)) {	// check name field
 		return false;
 	}
 

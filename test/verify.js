@@ -14,7 +14,6 @@ describe('Verify',function() {
 				console.log('example');
 			}
 		};
-
 		var broken_type = {
 			name : 'broken',
 			i : {'a':0,'b':0,'c':0},
@@ -23,7 +22,6 @@ describe('Verify',function() {
 				console.log('example');
 			}
 		};
-
 		var broken_i = {
 			name : 'broken',
 			type : 'broken',
@@ -40,9 +38,10 @@ describe('Verify',function() {
 				console.log('example');
 			}
 		}
-
 		it('Should fail without name',function() {
 			assert.ok(!verify(broken_name),'Should fail without name');
+			broken_name['name'] = ['test'];
+			assert.ok(!verify(broken_name),'Should fail with incorrect type of name');
 		});
 		it('Should fail without type',function() {
 			assert.ok(!verify(broken_type),'Should fail without type');
