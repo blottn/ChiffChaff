@@ -90,17 +90,17 @@ describe('Verify',function() {
 						assert.ok(!verify(broken_o),'Passed with o set to invalid type: ' + (typeof example_types[i]));
 					}
 				}*/
-				checkTypeIs(broken_o,'o','object');
+				checkTypeFailures(verify,broken_o,'o','object');
 			});
 		});
 	});
 });
 
-function checkTypeIs(object,key,type) {
+function checkTypeFailures(f,object,key,type) {
 	for (var i in example_types) {
 		if(!(typeof example_types[i] === type)) {
 			object[key] = example_types[i];
-			assert.ok(!verify(object),'Passed with ' + key + ' set to invalid type: ' + (typeof example_types[i]));
+			assert.ok(!f(object),'Passed with ' + key + ' set to invalid type: ' + (typeof example_types[i]));
 		}
 	}
 }
