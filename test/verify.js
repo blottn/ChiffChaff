@@ -23,10 +23,7 @@ describe('Verify',function() {
 				assert.ok(!verify(broken_name),'Passed without name');
 			});
 			it('Should fail when name not a string',function() {
-				for (var i in example_types) {
-					broken_name['name'] = example_types[i];
-					assert.ok(!verify(broken_name),'Passed with name as type: ' + (typeof example_types[i]));
-				}
+				checkTypeFailures(verify,broken_name,'name','string');
 			});
 		});
 
@@ -43,11 +40,7 @@ describe('Verify',function() {
 				assert.ok(!verify(broken_type),'Passed without type');
 			});
 			it('Should fail when type isn\'t string', function() {
-				for (var i in example_types) {
-					broken_type['type'] = example_types[i];
-					assert.ok(!verify(broken_type),'Passed with type as ' + (typeof example_types[i]));
-				}
-				assert.ok(!verify(broken_type),'Passed with type as array');
+				checkTypeFailures(verify,broken_type,'type','string');
 			});
 			it('Should fail when type is a reserved type', function() {
 				for (var i in reserved) {
@@ -69,6 +62,10 @@ describe('Verify',function() {
 			it('Should fail without i field',function() {
 				assert.ok(!verify(broken_i),'Passed without i field');
 			});
+
+			it('Should fail with incorrect type of i field',function() {
+				checkTypeFailures(verify,broken_i,'i','object');
+			});
 		});
 		
 		describe('Output',function() {
@@ -84,23 +81,24 @@ describe('Verify',function() {
 				assert.ok(!verify(broken_o),'Passed without o field');
 			});
 			it('Should fail with incorrect type of o field',function() {
-/*				for (var i in example_types) {
-					if (!(typeof example_types[i] === "object")) {
-						broken_o['o'] = example_types[i];
-						assert.ok(!verify(broken_o),'Passed with o set to invalid type: ' + (typeof example_types[i]));
-					}
-				}*/
 				checkTypeFailures(verify,broken_o,'o','object');
 			});
+/*			it('Should have internal fields of the form String : Int',function() {
+				checkObjectInternalTypes(verify,broken_o,'o','string','number');
+			});*/
 		});
 	});
 });
 
 function checkTypeFailures(f,object,key,type) {
+	var indexCorrect = 0;
 	for (var i in example_types) {
+		object[key] = example_types[i];
 		if(!(typeof example_types[i] === type)) {
-			object[key] = example_types[i];
 			assert.ok(!f(object),'Passed with ' + key + ' set to invalid type: ' + (typeof example_types[i]));
+		}
+		else {
+			assert.ok(f(object),'Failed with ' + key + ' set to invalid type: ' + (typeof example_types[i]));
 		}
 	}
 }
