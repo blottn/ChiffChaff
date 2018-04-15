@@ -50,48 +50,44 @@ describe('Verify',function() {
 			});
 		});
 		
-		describe('Input',function() {
-			var broken_i = {
-				name : 'broken',
-				type : 'broken',
-				o : {'a':0,'b':0,'c':0},
-				run : function() {
-					console.log('example');
-				}
-			}
-			it('Should fail without i field',function() {
-				assert.ok(!verify(broken_i),'Passed without i field');
-			});
+		testIOField('Input');
+		testIOField('Output');
 
-			it('Should fail with incorrect type of i field',function() {
-				checkTypeFailures(verify,broken_i,'i','object');
-			});
-			it('Should have i object internal fields of the form String : Int',function() {
-				checkObjectInternalTypes(verify,broken_i,'i','string','number');
-			});
-		});
-		
-		describe('Output',function() {
-			var broken_o = {
-				name : 'broken',
-				type : 'broken',
-				i : {'a':0,'b':0,'c':0,'c':1},
-				run : function() {
-					console.log('example');
-				}
-			};
-			it('Should fail without o field',function() {
-				assert.ok(!verify(broken_o),'Passed without o field');
-			});
-			it('Should fail with incorrect type of o field',function() {
-				checkTypeFailures(verify,broken_o,'o','object');
-			});
-			it('Should have o object internal fields of the form String : Int',function() {
-				checkObjectInternalTypes(verify,broken_o,'o','string','number');
-			});
-		});
 	});
 });
+
+function testIOField(field) {
+	var field = '';
+	var other = '';
+	if (field === 'Input') {
+		shorthand = 'i';
+		other = 'o';
+	}
+	else {
+		shorthand = 'o';
+		other = 'i';
+	}
+
+	describe(field,function() {
+		var broken = {
+			name : 'broken',
+			type : 'broken',
+			run : function() {
+				console.log('example');
+			}
+		};
+		broken[other] = {'a':0,'b':0,'c':0};
+		it('Should fail without ' + shorthand + ' field',function() {
+			assert.ok(!verify(broken),'Passed without ' + shorthand + ' field');
+		});
+		it('Should fail with incorrect type of ' + shorthand + ' field',function() {
+			checkTypeFailures(verify,broken,shorthand,'object');
+		});
+		it('Should have ' + shorthand + ' object internal fields of the form String : Int',function() {
+			checkObjectInternalTypes(verify,broken,shorthand,'string','number');
+		});
+	});
+}
 
 function checkObjectInternalTypes(f,object,field,type_a,type_b) {
 	for (var i in example_keys) {
