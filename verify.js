@@ -9,8 +9,8 @@ function verify(obj) {
 
 	if  (  !("i" in obj)
 		|| !("o" in obj)
-		|| !obj.i instanceof Object 
-		|| !obj.o instanceof Object) {	// check i and o fields
+		|| !(obj.i instanceof Object) 
+		|| !(obj.o instanceof Object)) {	// check i and o fields
 		return false;
 	}
 	
