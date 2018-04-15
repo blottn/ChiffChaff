@@ -66,8 +66,8 @@ describe('Verify',function() {
 					console.log('example');
 				}
 			}
-			it('Should fail without i',function() {
-				assert.ok(!verify(broken_i),'Passed without i');
+			it('Should fail without i field',function() {
+				assert.ok(!verify(broken_i),'Passed without i field');
 			});
 		});
 		
@@ -75,14 +75,32 @@ describe('Verify',function() {
 			var broken_o = {
 				name : 'broken',
 				type : 'broken',
-				i : {'a':0,'b':0,'c':0},
+				i : {'a':0,'b':0,'c':0,'c':1},
 				run : function() {
 					console.log('example');
 				}
-			}
-			it('Should fail without o',function() {
-				assert.ok(!verify(broken_o),'Passed without o');
+			};
+			it('Should fail without o field',function() {
+				assert.ok(!verify(broken_o),'Passed without o field');
+			});
+			it('Should fail with incorrect type of o field',function() {
+/*				for (var i in example_types) {
+					if (!(typeof example_types[i] === "object")) {
+						broken_o['o'] = example_types[i];
+						assert.ok(!verify(broken_o),'Passed with o set to invalid type: ' + (typeof example_types[i]));
+					}
+				}*/
+				checkTypeIs(broken_o,'o','object');
 			});
 		});
 	});
 });
+
+function checkTypeIs(object,key,type) {
+	for (var i in example_types) {
+		if(!(typeof example_types[i] === type)) {
+			object[key] = example_types[i];
+			assert.ok(!verify(object),'Passed with ' + key + ' set to invalid type: ' + (typeof example_types[i]));
+		}
+	}
+}
