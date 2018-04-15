@@ -3,7 +3,7 @@ const verify = require('../verify.js');
 const reserved = require('../reserved.js');
 
 const example_types = [{}, 123, 'mystring',[]];
-
+const example_keys = [123,'mystring'];
 describe('Verify',function() {
 	it('Should import',function() {
 		assert.ok(verify);
@@ -66,6 +66,9 @@ describe('Verify',function() {
 			it('Should fail with incorrect type of i field',function() {
 				checkTypeFailures(verify,broken_i,'i','object');
 			});
+			it('Should have i object internal fields of the form String : Int',function() {
+				checkObjectInternalTypes(verify,broken_i,'i','string','number');
+			});
 		});
 		
 		describe('Output',function() {
@@ -83,15 +86,29 @@ describe('Verify',function() {
 			it('Should fail with incorrect type of o field',function() {
 				checkTypeFailures(verify,broken_o,'o','object');
 			});
-/*			it('Should have internal fields of the form String : Int',function() {
+			it('Should have o object internal fields of the form String : Int',function() {
 				checkObjectInternalTypes(verify,broken_o,'o','string','number');
-			});*/
+			});
 		});
 	});
 });
 
+function checkObjectInternalTypes(f,object,field,type_a,type_b) {
+	for (var i in example_keys) {
+		for (var j in example_types) {
+			object[field][i] = j;
+			if ((typeof i === type_a) && (typeof j === type_b)) {
+				assert.ok(f(object), 'Failed with key: ' + i + ' and value: ' + j);
+			}
+			else {
+				assert.ok(!f(object), 'Passed with key: ' + i + ' and value: ' + j);
+			}
+		}
+		object[field] = {};	//clear it
+	}
+}
+
 function checkTypeFailures(f,object,key,type) {
-	var indexCorrect = 0;
 	for (var i in example_types) {
 		object[key] = example_types[i];
 		if(!(typeof example_types[i] === type)) {
