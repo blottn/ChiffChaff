@@ -4,6 +4,7 @@ const reserved = require('../reserved.js');
 
 const example_types = [{}, 123, 'mystring',[]];
 const example_keys = [123,'mystring'];
+
 describe('Verify',function() {
 	it('Should import',function() {
 		assert.ok(verify);
@@ -15,9 +16,14 @@ describe('Verify',function() {
 				type : 'broken',
 				i : {'a':0,'b':0,'c':0},
 				o : {'a':0,'b':0,'c':0},
-				run : function() {
-					console.log('example');
+				op : {
+					type : 'func',
+					data : function() {
+						console.log('test');
+					}
 				}
+
+					
 			};
 			it('Should fail without name',function() {
 				assert.ok(!verify(broken_name),'Passed without name');
@@ -32,8 +38,11 @@ describe('Verify',function() {
 				name : 'broken',
 				i : {'a':0,'b':0,'c':0},
 				o : {'a':0,'b':0,'c':0},
-				run : function() {
-					console.log('example');
+				op : {
+					type : 'func',
+					data : function() {
+						console.log('test');
+					}
 				}
 			};
 			it('Should fail without type',function() {
@@ -52,12 +61,63 @@ describe('Verify',function() {
 		
 		testIOField('Input');
 		testIOField('Output');
+		
+		describe('Operation',function() {
+			var broken = {
+				name : 'broken',
+				type : 'broken',
+				i : {'a':0,'b':0,'c':0},
+				o : {'x':0,'y':0,'z':0},
+			};
+			it('Should fail without an op field',function() {
+				assert.ok(!verify(broken),'Passed without op field');
+			});
+			it('Should fail when type isn\'t an object', function() {
+				checkTypeFailures(verify,broken,'op','object');
+			});
+			it('Should fail with broken type value in op', function() {
+				broken['op'] = {
+					type : {},
+					data : function() {
+						console.log('test');
+					}
+				};
+				assert.ok(!verify(broken),'Passed with op type as object');
+				broken['op']['type'] = 123;
+				assert.ok(!verify(broken),'Passed with op type as number');
+				broken['op']['type'] = 'function';
+				assert.ok(verify(broken),'Failed with op type as string');
+			});
 
+			it('Should expect correct data values for types',testOps);
+		});
 	});
 });
 
+function testOps() {
+	var broken = {
+		type : 'type',
+		i : {'a':0,'b':0,'c':0},
+		o : {'x':0,'y':0,'z':0},
+		op: {
+			type : 'function',
+			data : function() {
+				console.log('test');
+			}
+		}
+	};
+
+	assert.ok(verify(broken),'Failed with function op');
+
+	broken['op'] = {
+		type : 'map',
+		data : ['x=a','y=b','z=c']
+	}
+	assert.ok(verify(broken),'Failed with function op');
+}
+
 function testIOField(field) {
-	var field = '';
+	var shorthand = '';
 	var other = '';
 	if (field === 'Input') {
 		shorthand = 'i';
@@ -67,13 +127,15 @@ function testIOField(field) {
 		shorthand = 'o';
 		other = 'i';
 	}
-
 	describe(field,function() {
 		var broken = {
 			name : 'broken',
 			type : 'broken',
-			run : function() {
-				console.log('example');
+			op : {
+				type : 'func',
+				data : function() {
+					console.log('test');
+				}
 			}
 		};
 		broken[other] = {'a':0,'b':0,'c':0};
