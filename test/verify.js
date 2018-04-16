@@ -72,8 +72,8 @@ describe('Verify',function() {
 			it('Should fail without an op field',function() {
 				assert.ok(!verify(broken),'Passed without op field');
 			});
-			it('Should fail when type isn\'t an object', function() {
-				checkTypeFailures(verify,broken,'op','object');
+			it('Should fail when type isn\'t a string', function() {
+				checkTypeFailures(verify,broken,'op','string');
 			});
 			it('Should fail with broken type value in op', function() {
 				broken['op'] = {
