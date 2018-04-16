@@ -16,13 +16,28 @@ function verify(obj) {
 		|| !(obj.o instanceof Object)) {	// check i and o fields
 		return false;
 	}
-	
+
+	if (!assertKeyValueTypes(obj.i,"string","number")) {
+		return false;
+	}
+	if (!assertKeyValueTypes(obj.o,"string","number")) {
+		return false;
+	}
 	if (!("op" in obj)
 		|| !(obj.op instanceof Object)
 		|| !("type" in obj.op)
 		|| !(typeof obj.op.type === "string")
 		|| !("data" in obj.op)) {
 		return false;
+	}
+	return true;
+}
+
+function assertKeyValueTypes(object,key_t,val_t) {
+	for (var k in object) {
+		if (!(typeof k === key_t) || !(typeof object[k] === val_t)) {
+			return false;
+		}
 	}
 	return true;
 }
