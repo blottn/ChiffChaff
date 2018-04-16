@@ -173,7 +173,7 @@ function checkTypeFailures(f,object,key,type) {
 			assert.ok(!f(object),'Passed with ' + key + ' set to invalid type: ' + (typeof example_types[i]));
 		}
 		else {
-			assert.ok(f(object),'Failed with ' + key + ' set to invalid type: ' + (typeof example_types[i]));
+			assert.ok(f(object),'Failed with ' + key + ' set to valid type: ' + (typeof example_types[i]));
 		}
 	}
 }
