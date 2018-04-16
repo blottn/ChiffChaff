@@ -3,7 +3,7 @@ function verify(obj) {
 		return false;
 	}
 
-	if (("type" in obj && !typeof obj.type === "string") || !("type" in obj)) {	// check type field
+	if (("type" in obj && !(typeof obj.type === "string")) || !("type" in obj)) {	// check type field
 		return false;
 	}
 
