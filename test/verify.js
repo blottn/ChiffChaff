@@ -2,7 +2,7 @@ const assert = require('assert');
 const verify = require('../verify.js');
 const reserved = require('../reserved.js');
 
-const example_types = [{}, 123, 'mystring',[]];
+const example_types = [{}, 123, 'mystring'];
 const example_keys = [123,'mystring'];
 
 describe('Verify',function() {
