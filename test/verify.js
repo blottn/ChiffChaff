@@ -72,8 +72,19 @@ describe('Verify',function() {
 			it('Should fail without an op field',function() {
 				assert.ok(!verify(broken),'Passed without op field');
 			});
-			it('Should fail when type isn\'t a string', function() {
-				checkTypeFailures(verify,broken,'op','string');
+			it('Should fail when type isn\'t a string', function() {	// doesn't work because it passes the wrong object to verify
+				broken.op = {
+					type : {},
+					data : function() {
+						console.log('tick');
+					}
+				};
+				assert.ok(!verify(broken), 'Passed with type as object');
+				broken.op.type = 123;
+				assert.ok(!verify(broken), 'Passed with type as number');
+				assert.ok(verify(broken), 'Failed with type as string');
+
+
 			});
 			it('Should fail with broken type value in op', function() {
 				broken['op'] = {
