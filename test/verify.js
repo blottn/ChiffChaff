@@ -82,6 +82,7 @@ describe('Verify',function() {
 				assert.ok(!verify(broken), 'Passed with type as object');
 				broken.op.type = 123;
 				assert.ok(!verify(broken), 'Passed with type as number');
+				broken.op.type = 'func';
 				assert.ok(verify(broken), 'Failed with type as string');
 
 
