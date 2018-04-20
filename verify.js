@@ -27,7 +27,9 @@ function verify(obj) {
 		|| !(obj.op instanceof Object)
 		|| !("type" in obj.op)
 		|| !(typeof obj.op.type === "string")
-		|| !("data" in obj.op)) {
+		|| !("data" in obj.op)
+		|| ((obj.op.type === 'func') && !(typeof obj.op.data === 'function'))	//check types match
+		|| ((obj.op.type === 'map') && !(typeof obj.op.data === 'object'))) {
 		return false;
 	}
 	return true;
