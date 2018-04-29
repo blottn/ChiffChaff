@@ -12,6 +12,6 @@
     "mocha": "^5.0.5"
   },
   "dependencies": {
-    "localscope": "^1.0.1"
+    "localscope": "^1.0.2"
   }
 }
