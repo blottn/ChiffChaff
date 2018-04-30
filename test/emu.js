@@ -19,6 +19,94 @@ describe('Emulation',function() {
 			}
 		};
 		let conf = {
+			op : '|',
+			desc : 'a|b',
+			confs : [
+				{
+					i : {
+						a : 0,
+						b : 0
+					},
+					o : {
+						x : 0
+					},
+				},
+				{
+					i : {
+						a : 0,
+						b : 1
+					},
+					o : {
+						x : 1
+					},
+				},
+				{
+					i : {
+						a : 1,
+						b : 0
+					},
+					o : {
+						x : 1
+					},
+				},
+				{
+					i : {
+						a : 1,
+						b : 1
+					},
+					o : {
+						x : 1
+					},
+				}
+			]
+		};
+		run_for_op(conf,ent);
+
+		conf = {
+			op : '^',
+			desc : 'a^b',
+			confs : [
+				{
+					i : {
+						a : 0,
+						b : 0
+					},
+					o : {
+						x : 0
+					},
+				},
+				{
+					i : {
+						a : 0,
+						b : 1
+					},
+					o : {
+						x : 1
+					},
+				},
+				{
+					i : {
+						a : 1,
+						b : 0
+					},
+					o : {
+						x : 1
+					},
+				},
+				{
+					i : {
+						a : 1,
+						b : 1
+					},
+					o : {
+						x : 0
+					},
+				}
+			]
+		};
+		run_for_op(conf,ent); 
+
+		conf = {
 			op : '&',
 			desc : 'a&b',
 			confs : [
@@ -60,7 +148,7 @@ describe('Emulation',function() {
 				}
 			]
 		};
-		run_for_op(conf,ent);
+		run_for_op(conf,ent); 
 	});
 });
 
