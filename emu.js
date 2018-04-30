@@ -19,7 +19,7 @@ function map_step(entity, states) {
 	return entity;
 }
 
-function evaluate(entity, logic, states) {	// this is terribly unperformant...
+function evaluate(entity, logic, states) {
 	eval(loc('states'));
 	return eval(logic);
 }
