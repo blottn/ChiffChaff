@@ -12,7 +12,7 @@ describe('Verify',function() {
 
 	describe('Broken Entities',function() {
 		describe('Name',function() {
-			var broken_name = {
+			let broken_name = {
 				type : 'broken',
 				i : {'a':0,'b':0,'c':0},
 				o : {'a':0,'b':0,'c':0},
@@ -34,7 +34,7 @@ describe('Verify',function() {
 		});
 
 		describe('Type',function() {
-			var broken_type = {
+			let broken_type = {
 				name : 'broken',
 				i : {'a':0,'b':0,'c':0},
 				o : {'a':0,'b':0,'c':0},
@@ -52,7 +52,7 @@ describe('Verify',function() {
 				checkTypeFailures(verify,broken_type,'type','string');
 			});
 			it('Should fail when type is a reserved type', function() {
-				for (var i in reserved) {
+				for (let i in reserved) {
 					broken_type['type'] = reserved[i];
 					assert.ok(!verify(broken_type),'Passed with type set to reserved value: ' + reserved[i]);
 				}
@@ -63,7 +63,7 @@ describe('Verify',function() {
 		testIOField('Output');
 		
 		describe('Operation',function() {
-			var broken = {
+			let broken = {
 				name : 'broken',
 				type : 'broken',
 				i : {'a':0,'b':0,'c':0},
@@ -93,7 +93,7 @@ describe('Verify',function() {
 });
 
 function testOps() {
-	var broken = {
+	let broken = {
 		name : 'name',
 		type : 'type',
 		i : {'a':0,'b':0,'c':0},
@@ -116,8 +116,8 @@ function testOps() {
 }
 
 function testIOField(field) {
-	var shorthand = '';
-	var other = '';
+	let shorthand = '';
+	let other = '';
 	if (field === 'Input') {
 		shorthand = 'i';
 		other = 'o';
@@ -127,7 +127,7 @@ function testIOField(field) {
 		other = 'i';
 	}
 	describe(field,function() {
-		var broken = {
+		let broken = {
 			name : 'broken',
 			type : 'broken',
 			op : {
@@ -151,8 +151,8 @@ function testIOField(field) {
 }
 
 function checkObjectInternalTypes(f,object,field,type_a,type_b) {
-	for (var i in example_keys) {
-		for (var j in example_types) {
+	for (let i in example_keys) {
+		for (let j in example_types) {
 			object[field][i] = j;
 			if ((typeof i === type_a) && (typeof j === type_b)) {
 				assert.ok(f(object), 'Failed with key: ' + i + ' and value: ' + j);
@@ -166,7 +166,7 @@ function checkObjectInternalTypes(f,object,field,type_a,type_b) {
 }
 
 function checkTypeFailures(f,object,key,type) {
-	for (var i in example_types) {
+	for (let i in example_types) {
 		object[key] = example_types[i];
 		if(!(typeof example_types[i] === type)) {
 			assert.ok(!f(object),'Passed with ' + key + ' set to invalid type: ' + (typeof example_types[i]));

@@ -9,7 +9,7 @@ describe('Emulation',function() {
 	});
 	describe('Map steps',function() {
 		it('Should work for &',function() {
-			var ent = {
+			let ent = {
 				name : 'name',
 				type : 'test',
 				i : {'a':1,'b':0},
