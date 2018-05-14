@@ -84,10 +84,52 @@ describe('Verify',function() {
 				assert.ok(!verify(broken), 'Passed with type as number');
 				broken.op.type = 'func';
 				assert.ok(verify(broken), 'Failed with type as string');
-
-
 			});
 			it('Should expect correct data values for types',testOps);
+		});
+		describe('Children',function() {
+			it('Should fail with children not as object', function() {
+				let entity = {
+					name : 'test',
+					type : 'test',
+					i : {'a':0, 'b':0},
+					o : {'x':0},
+					op : {
+						type : 'map',
+						data : {
+							'x':'a&b'
+						}
+					}
+				};
+				checkTypeFailures(verify,entity,'children','object');
+			});
+			it('Should fail without an output', function() {	// unsure if I definitely want to force output
+				let entity = {
+					name : 'test',
+					type : 'test',
+					i : {'a':0, 'b':0},
+					o : {'x':0},
+					children : {
+						'c' : {
+							type : 'newand',
+							i : {'a': 0,'b':0}
+						}
+					},
+					op : {
+						type : 'map',
+						data : {
+							'x':'a&b'
+						}
+					}
+				};
+
+				assert.ok(!verify(entity),'Passed without output');
+				entity.children.c['o'] = {'x':0};
+				assert.ok(verify(entity),'Failed with output and valid object');
+			});
+			it('Should fail without a type', function() {
+
+			});
 		});
 	});
 });
