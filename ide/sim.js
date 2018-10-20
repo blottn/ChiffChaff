@@ -15,7 +15,7 @@ let ra =  {
     o : {'z':0, 'cout':0},
     architecture : {
         signals: {'s':false},
-        logic: ['this.s = this.a ^ this.b', 'this.z = this.a ^ this.b ^ this.cin', 'this.cout = (this.a && this.b) || (this.cin && this.s)']
+        logic: ['this.s=this.a ^ this.b', 'this.z= this.a ^ this.b ^ this.cin', 'this.cout= ( this.a && this.b ) || ( this.cin && this.s )']
     }
 }
 
@@ -44,4 +44,39 @@ function run(o) {
 }
 
 
-run(fa);
+//run(fa);
+
+/*
+{
+    roots : ['a','b','cin']
+}
+*/
+
+
+function graph(ent) {
+    let logic = ent.architecture.logic;
+    this.nodes = {}; //object of signal -> node
+    logic.map((l) => {
+        let lhs = l.split('=')[0];
+        let name = lhs.split('.')[1];
+        /*if (!(name in this.nodes)) {
+            this.nodes[name] = new node(l);
+        }
+        else {
+            this.nodes[name].step = l;
+        }*/
+
+        let rhs = l.split('=')[1];
+        //calculate parents
+        console.log(rhs.split(' ').map((x) => x.split('.')));
+
+    });
+}
+
+console.log(new graph(fa));
+
+
+function node(step) {
+    this.step = step;
+    this.children = [];
+}
