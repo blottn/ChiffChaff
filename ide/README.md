@@ -2,6 +2,6 @@
 
 ## Thoughts
 
-- Build DAG of dependencies
-- Evaluate DAG breadth first for every tick.
+- Build directed graph of dependencies
+- Evaluate directed graph breadth first for every tick.
 
