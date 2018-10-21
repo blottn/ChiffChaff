@@ -6,7 +6,7 @@ let fa =  {
             // add some internals here and add their ios to the context
         },
         signals: {'s':false},
-        logic: ['this.s = this.a ^ this.b', 'this.z = this.a ^ this.b ^ this.cin', 'this.cout = (this.a && this.b ) || (this.cin && this.s )'],
+        logic: ['this.s=this.a ^this.b', 'this.z=this.a ^this.b ^this.cin', 'this.cout=(this.a &&this.b )||(this.cin &&this.s )'],
         hierarchy : { 's' : { notional: true ,parents: ['a','b'] }, 'z': { notional: false ,parents: ['a','b','cin']}, 'cout':{notional: false, parents: ['a','b','cin','s']}}
     }
 }
@@ -40,44 +40,72 @@ function run(o) {
     o.architecture.logic.map((func) => {
         f = new Function(func);
         f.call(ctx);
-    })
+    });
     console.log(ctx);
 }
 
-
-//run(fa);
-
-/*
-{
-    roots : ['a','b','cin']
-}
-*/
-
-
-function graph(ent) {
-    let logic = ent.architecture.logic;
+function graph(ent,ctx) {
+    this.ctx = {};
     this.nodes = {}; //object of signal -> node
-    logic.map((l) => {
-        let lhs = l.split('=')[0];
-        let name = lhs.split('.')[1];
-        /*if (!(name in this.nodes)) {
-            this.nodes[name] = new node(l);
+    this.frontier = [];
+
+    Object.values([ent.i, ent.o, ent.architecture.signals]).map((set) => {
+        Object.keys(set).map((name) => {
+            this.nodes[name] = new node(() => this.ctx[name]);
+        });
+    });
+
+    this.restim = () => {
+        this.frontier = this.frontier.concat(Object.keys(ent.i));
+    }
+
+    // link the nodes
+    Object.values(ent.architecture.logic).map((logic) => {
+        let split = logic.split('=');
+
+        let lhs = split[0].split('.')[1];
+        if (!(lhs in this.nodes)) {
+            this.nodes[lhs] = new node(new Function(logic));
         }
         else {
-            this.nodes[name].step = l;
-        }*/
+            this.nodes[lhs].step = new Function(logic);
+        }
+        let rhs = split[1];
 
-        let rhs = l.split('=')[1];
-        //calculate parents
-        let tokens = rhs.split(' ').map((x) => x.split('.'));
-        console.log('tokens: ');
-        console.log(tokens);
+        let parents = rhs.split(' ').map((tok) => tok.split('.'))
+                                    .filter((item) => item.length == 2)
+                                    .map((list) => list[1])
+                                    .map((p) => {
+                                        if (! (p in this.nodes)) {
+                                            // is it possible this will be hit?
+                                            console.error('oh i do have to think about this');
+                                        }
+                                        this.nodes[p].children.push(lhs);
+                                    });
 
     });
+
+    this.step = () => { //TODO debug
+        let nf = []
+        this.frontier.map((node) => {
+            console.log(this.nodes[node]);
+            this.nodes[node].step.call(this.ctx);
+            Object.keys(this.nodes[node].children).map((n) => {
+                if (!(nf.includes(this.nodes[node].children[n]))) {
+                    nf.push(this.nodes[node].children[n]);
+                }
+            });
+        });
+        this.frontier = nf;
+    }
+
+    this.restim();
 }
 
-console.log(new graph(fa));
-
+g = new graph(fa, {});
+console.log(g);
+g.step();
+console.log(g);
 
 function node(step) {
     this.step = step;
