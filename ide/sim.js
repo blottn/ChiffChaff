@@ -6,7 +6,8 @@ let fa =  {
             // add some internals here and add their ios to the context
         },
         signals: {'s':false},
-        logic: ['this.s = this.a ^ this.b', 'this.z = this.a ^ this.b ^ this.cin', 'this.cout = (this.a && this.b) || (this.cin && this.s)']
+        logic: ['this.s = this.a ^ this.b', 'this.z = this.a ^ this.b ^ this.cin', 'this.cout = (this.a && this.b ) || (this.cin && this.s )'],
+        hierarchy : { 's' : { notional: true ,parents: ['a','b'] }, 'z': { notional: false ,parents: ['a','b','cin']}, 'cout':{notional: false, parents: ['a','b','cin','s']}}
     }
 }
 
@@ -68,7 +69,9 @@ function graph(ent) {
 
         let rhs = l.split('=')[1];
         //calculate parents
-        console.log(rhs.split(' ').map((x) => x.split('.')));
+        let tokens = rhs.split(' ').map((x) => x.split('.'));
+        console.log('tokens: ');
+        console.log(tokens);
 
     });
 }
