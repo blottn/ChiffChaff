@@ -20,30 +20,6 @@ let ra =  {
     }
 }
 
-function run(o) {
-    ctx = {}
-    //inputs
-    for (key in o.i) {
-        ctx[key] = o.i[key]
-    }
-
-    //outputs
-    for (key in o.o) {
-        ctx[key] = o.o[key]
-    }
-
-    //signals
-    for (m in o.architecture.signals) {
-        ctx[m] = o.architecture.signals[m]
-    }
-
-    o.architecture.logic.map((func) => {
-        f = new Function(func);
-        f.call(ctx);
-    });
-    console.log(ctx);
-}
-
 function graph(ent,ctx) {
     this.ctx = {};
     this.nodes = {}; //object of signal -> node
