@@ -1,3 +1,14 @@
+// Test Data
+
+/*let ra =  {
+    i : {'a':1, 'b':1, 'cin':1},
+    o : {'z':0, 'cout':0},
+    architecture : {
+        signals: {'s':0},
+        logic: ['this.s=this.a ^this.b', 'this.z=this.a ^this.b ^this.cin', 'this.cout=(this.a &&this.b )||(this.cin &&this.s )']
+    }
+}*/
+
 let fa =  {
     i : {'a':0, 'b':0, 'cin':1},
     o : {'z':0, 'cout':0},
@@ -5,45 +16,45 @@ let fa =  {
         internals : {
             // add some internals here and add their ios to the context
         },
-        signals: {'s':false},
+        signals: {'s':0},
         logic: ['this.s=this.a ^this.b', 'this.z=this.a ^this.b ^this.cin', 'this.cout=(this.a &&this.b )||(this.cin &&this.s )'],
         hierarchy : { 's' : { notional: true ,parents: ['a','b'] }, 'z': { notional: false ,parents: ['a','b','cin']}, 'cout':{notional: false, parents: ['a','b','cin','s']}}
     }
 }
 
-let ra =  {
-    i : {'a':1, 'b':1, 'cin':1},
-    o : {'z':0, 'cout':0},
-    architecture : {
-        signals: {'s':false},
-        logic: ['this.s=this.a ^ this.b', 'this.z= this.a ^ this.b ^ this.cin', 'this.cout= ( this.a && this.b ) || ( this.cin && this.s )']
-    }
-}
 
-function graph(ent,ctx) {
+
+// TODO write some helper parsing functions
+
+function graph(ent) {
     this.ctx = {};
-    this.nodes = {}; //object of signal -> node
+    this.nodes = {};
     this.frontier = [];
 
     Object.values([ent.i, ent.o, ent.architecture.signals]).map((set) => {
         Object.keys(set).map((name) => {
             this.nodes[name] = new node(() => this.ctx[name]);
+
+            // initialise values in context
+            if (name in ent.i) {
+                this.ctx[name] = ent.i[name]
+            }
+            if (name in ent.architecture.signals) {
+                this.ctx[name] = ent.architecture.signals[name];
+            }
         });
     });
-
-    this.restim = () => {
-        this.frontier = this.frontier.concat(Object.keys(ent.i));
-    }
-
+    
     // link the nodes
     Object.values(ent.architecture.logic).map((logic) => {
         let split = logic.split('=');
 
         let lhs = split[0].split('.')[1];
-        if (!(lhs in this.nodes)) {
+        if (!(lhs in this.nodes)) { // this likely wont happen
             this.nodes[lhs] = new node(new Function(logic));
         }
         else {
+            this.nodes[lhs].stepText = logic
             this.nodes[lhs].step = new Function(logic);
         }
         let rhs = split[1];
@@ -61,10 +72,9 @@ function graph(ent,ctx) {
 
     });
 
-    this.step = () => { //TODO debug
+    this.step = function() {
         let nf = []
         this.frontier.map((node) => {
-            console.log(this.nodes[node]);
             this.nodes[node].step.call(this.ctx);
             Object.keys(this.nodes[node].children).map((n) => {
                 if (!(nf.includes(this.nodes[node].children[n]))) {
@@ -75,15 +85,23 @@ function graph(ent,ctx) {
         this.frontier = nf;
     }
 
+    // TODO change this to adding children of inputs
+    this.restim = () => {
+        this.frontier = this.frontier.concat(Object.keys(ent.i));
+    }
+
     this.restim();
 }
-
-g = new graph(fa, {});
-console.log(g);
-g.step();
-console.log(g);
 
 function node(step) {
     this.step = step;
     this.children = [];
 }
+
+g = new graph(fa);
+g.step();
+g.step();
+console.log(g);
+
+
+/// ISSUE IS THAT THE NODES STILL HAVE WRONG STEP FUNCTION
