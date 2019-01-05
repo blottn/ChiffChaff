@@ -1,32 +1,35 @@
 // Test Data
 
-/*let ra =  {
-    i : {'a':1, 'b':1, 'cin':1},
-    o : {'z':0, 'cout':0},
+let ha = {
+    i : {'a':1, 'b':1},
+    o : {'s':0, 'c':0},
     architecture : {
-        signals: {'s':0},
-        logic: ['this.s=this.a ^this.b', 'this.z=this.a ^this.b ^this.cin', 'this.cout=(this.a &&this.b )||(this.cin &&this.s )']
+        signals: {},
+        logic: ['this.s=this.a ^this.b', 'this.c=this.a &this.b']
     }
-}*/
+};
 
 let fa =  {
     i : {'a':0, 'b':0, 'cin':1},
     o : {'z':0, 'cout':0},
     architecture : {
+        signals: {'s':0},
+        logic: ['this.s=this.a ^this.b', 'this.z=this.a ^this.b ^this.cin', 'this.cout=(this.a &&this.b )||(this.cin &&this.s )'],
+    }
+};
+
+let ra =  {
+    i : {'a':0, 'a':0,'b':0, 'cin':1},
+    o : {'z':0, 'cout':0},
+    architecture : {
         internals : {
-            // add some internals here and add their ios to the context
         },
         signals: {'s':0},
         logic: ['this.s=this.a ^this.b', 'this.z=this.a ^this.b ^this.cin', 'this.cout=(this.a &&this.b )||(this.cin &&this.s )'],
-        hierarchy : { 's' : { notional: true ,parents: ['a','b'] }, 'z': { notional: false ,parents: ['a','b','cin']}, 'cout':{notional: false, parents: ['a','b','cin','s']}}
     }
-}
+};
 
-
-
-// TODO write some helper parsing functions
-
-function graph(ent) {
+function graph(ent, kinds) {
     this.ctx = {};
     this.nodes = {};
     this.frontier = [];
@@ -98,10 +101,7 @@ function node(step) {
     this.children = [];
 }
 
-g = new graph(fa);
+g = new graph(ha, {'fa':fa, 'ra':ra});
 g.step();
 g.step();
 console.log(g);
-
-
-/// ISSUE IS THAT THE NODES STILL HAVE WRONG STEP FUNCTION
