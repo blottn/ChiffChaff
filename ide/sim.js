@@ -33,31 +33,13 @@ function graph(ent, kinds) {
     });
 
     // link the nodes
-    Object.values(ent.architecture.logic).map((logic) => {
-        let split = logic.split('=');
-
-        let lhs = split[0].split('.')[1];
-        if (!(lhs in this.nodes)) { // this likely wont happen
-            console.error('oh no this one generated it?');
-            this.nodes[lhs] = new node(new Function(logic),lhs);
-        }
-        else {
-            this.nodes[lhs].stepText = logic
-            this.nodes[lhs].step = new Function(logic);
-        }
-        let rhs = split[1];
-
-        let parents = rhs.split(' ').map((tok) => tok.split('.'))
-                                    .filter((item) => item.length == 2)
-                                    .map((list) => list[1])
-                                    .map((p) => {
-                                        if (! (p in this.nodes)) {
-                                            // is it possible this will be hit?
-                                            console.error('oh i do have to think about this');
-                                        }
-                                        this.nodes[p].children.push(lhs);
-                                    });
-
+    Object.keys(ent.architecture.logic).map((name) => {
+        let logic = ent.architecture.logic[name];
+        this.nodes[name].stepText = logic.combiner;
+        this.nodes[name].step = new Function(logic.combiner);
+        logic.depends.map((p) => {
+            this.nodes[p].children.push(name);
+        });
     });
 
     this.step = function() {
