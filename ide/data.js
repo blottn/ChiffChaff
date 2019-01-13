@@ -28,15 +28,15 @@ module.exports = {
             logic: {
                 's' : {
                     depends : ['a', 'b'],
-                    combiner : () => { return this.s=this.a ^this.b; }
+                    combiner : function() { return this.a ^this.b; }
                 },
                 'z' : {
                     depends : ['a', 'b', 'cin'],
-                    combiner : () => { return this.a ^this.b ^this.cin; }
+                    combiner : function() { return this.a ^this.b ^this.cin; }
                 },
                 'cout' : {
                     depends : ['a','b','cin','s'],
-                    combiner : () => { return (this.a &&this.b )||(this.cin &&this.s ); }
+                    combiner : function() { return (this.a &&this.b )||(this.cin &&this.s ); }
                 }
             }
         }
