@@ -8,11 +8,11 @@ module.exports = {
             logic: {
                 's': {
                     depends : ['a', 'b'],
-                    combiner : 'this.s=this.a ^this.b'
+                    combiner : function () { return this.a ^ this.b; }
                 },
                 'c': {
                     depends : ['a', 'b'],
-                    combiner : 'this.c=this.a &this.b'
+                    combiner : function () { return this.a & this.b; }
                 }
             }
         }
@@ -28,15 +28,15 @@ module.exports = {
             logic: {
                 's' : {
                     depends : ['a', 'b'],
-                    combiner : 'this.s=this.a ^this.b'
+                    combiner : () => { return this.s=this.a ^this.b; }
                 },
                 'z' : {
                     depends : ['a', 'b', 'cin'],
-                    combiner : 'this.z=this.a ^this.b ^this.cin'
+                    combiner : () => { return this.a ^this.b ^this.cin; }
                 },
                 'cout' : {
                     depends : ['a','b','cin','s'],
-                    combiner : 'this.cout=(this.a &&this.b )||(this.cin &&this.s )'
+                    combiner : () => { return (this.a &&this.b )||(this.cin &&this.s ); }
                 }
             }
         }
