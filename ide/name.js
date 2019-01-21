@@ -6,22 +6,32 @@ function getCode(text) {
     return buildup;
 }
 
+const limit = 122;
 
-function stringcrement(text) {
-    if (text == "") {
-        return text;
-    }
-    else {
-        if (text.charCodeAt(text.length - 1) < 122) {
-            return text.substring(0,text.length - 1);
+function stringcrement(vals) {
+    if (vals.length != 0) {
+        if (vals[vals.length - 1] < limit) {
+            vals[vals.length - 1] += 1;
+        }
+        else {
+            vals.splice(vals.length - 1);
+            stringcrement(vals).push('a'.charCodeAt(0));
         }
     }
+    else {
+        vals.push('a'.charCodeAt(0));
+    }
+    return vals;
+}
+
+function unaryFromCharCode(code) {
+    return String.fromCharCode(code);
 }
 
 function namer() {
-    this.state = 'a';
+    this.state = '';
     this.next = () => {
-        return stringcrement(this.state);
+        return this.state = stringcrement(getCode(this.state)).map(unaryFromCharCode).join('');
     };
 }
 
