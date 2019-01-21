@@ -3,6 +3,7 @@
 var t_data = require('./data.js');
 
 function graph(ent, kinds) {
+    this.ent = ent;
     this.ctx = {};
     this.nodes = {};
     // represents values that can change in the next cycle
@@ -25,9 +26,15 @@ function graph(ent, kinds) {
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
         let sub_entity = new graph(kinds[descriptor.kind]);
-        this.nodes[name] = new node(() => {this.data.step()},name,sub_entity);
-        // add as child correctly 
-
+        this.nodes[name] = new node({
+            name : name,
+            logic : sub_entity,
+            descriptor : ent.architecture.internals[name]
+        });
+        // add as child correctly
+        descriptor.depends.map((p) => {
+            this.nodes[p].children.push(name);
+        });
     });
 
     // link the nodes
@@ -42,14 +49,16 @@ function graph(ent, kinds) {
     this.step = function() {
         let nf = []
         this.frontier.map((node) => {
-            this.nodes[node].step(this.ctx);
-            Object.keys(this.nodes[node].children).map((n) => {
-                if (!(nf.includes(this.nodes[node].children[n]))) {
-                    nf.push(this.nodes[node].children[n]);
+            let unstable = this.nodes[node].step(this.ctx);
+            unstable.map((n) => {
+                if (!(nf.includes(n))) {
+                    nf.push(n);
                 }
             });
         });
+        // return the items in the frontier that changed
         this.frontier = nf;
+        return this.frontier.filter((x) => { return Object.keys(this.ent.o).includes(x)});
     }
 
     // TODO change this to adding children of inputs
@@ -60,27 +69,62 @@ function graph(ent, kinds) {
     this.restim();
 }
 
-function node(combiner, n, internalData) {
-    this.combiner = combiner;
-    this.name = n;
-    this.data = internalData;
+function node(opts) {
+    this.opts = opts;
+    this.logic = opts.logic;
+    this.name = opts.name;
     this.children = [];
-    this.step = function (ctx) {
-        ctx[this.name] = this.combiner.call(ctx);
+    
+    this.step = function(ctx) {
+        if (this.logic instanceof Function) {
+            ctx[this.name] = this.logic.call(ctx);
+        }
+        else {
+            this.logic.step();
+        }
+
+        // return children that need an update (for new frontier);
+        let cs = this.children;
+
+        if ( !(this.logic instanceof Function)) {
+            let changed = this.logic.step();
+            console.log('sub entity changed outputs: ');
+            console.log(changed);
+
+            // map changed to correct names
+            console.log(changed);
+            console.log('into:');
+            var cc = changed.map((item) => {
+                let name = this.opts.descriptor.output_map[item];
+                // set the value and add to frontier?
+                ctx[name] = this.logic.ctx[item];
+                return name;
+            });
+            console.log(cc);
+
+            // sub entity is stable
+            if (this.logic.frontier.length > 0) {
+                return [this.name];
+            }
+
+        }
+        return cs;
     }
 }
 
 function createDefaultNode(name) {
-    return new node(function() {
-        return this[name];
-    }, name);
+    return new node({name : name, logic : function() {
+        return this.children;
+    }});
 }
 
-g = new graph(t_data.ha, {'fa':t_data.fa, 'ra':t_data.ra});
+g = new graph(t_data.ra, {'fa':t_data.fa, 'ra':t_data.ra});
 console.log('Completed initialisation\n');
 console.log('DEBUG- simulation:');
-console.log(g.ctx);
 g.step();
-console.log(g.ctx);
+console.log('############## end step 1');
 g.step();
-console.log(g.ctx);
+console.log('############## end step 2');
+console.log(g.frontier);
+g.step();
+console.log('############## end step 3');

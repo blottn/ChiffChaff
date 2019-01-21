@@ -49,11 +49,13 @@ module.exports = {
             internals : {
                 'fa1': {
                     kind : 'fa',
+                    depends : ['a','b','cin'],
                     input_map : {'a':'a[0]','b':'b[0]','cin':'cin'},
                     output_map : {'z':'z[0]','cout':'c[0]'}
                 },
                 'fa2': {
                     kind : 'fa',
+                    depends : ['a', 'b', 'c'],
                     input_map : {'a':'a[1]','b':'b[1]','cin':'c[0]'},
                     output_map : {'z':'z[1]','cout':'cout'}
                 },
