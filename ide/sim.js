@@ -88,19 +88,14 @@ function node(opts) {
 
         if ( !(this.logic instanceof Function)) {
             let changed = this.logic.step();
-            console.log('sub entity changed outputs: ');
-            console.log(changed);
 
             // map changed to correct names
-            console.log(changed);
-            console.log('into:');
             var cc = changed.map((item) => {
                 let name = this.opts.descriptor.output_map[item];
-                // set the value and add to frontier?
+                // set the value
                 ctx[name] = this.logic.ctx[item];
                 return name;
             });
-            console.log(cc);
 
             // sub entity is stable
             if (this.logic.frontier.length > 0) {
@@ -118,13 +113,13 @@ function createDefaultNode(name) {
     }});
 }
 
-g = new graph(t_data.ra, {'fa':t_data.fa, 'ra':t_data.ra});
+g = new graph(t_data.fa, {'fa':t_data.fa, 'ra':t_data.ra});
 console.log('Completed initialisation\n');
 console.log('DEBUG- simulation:');
-g.step();
+console.log(g);
+console.log(g.step());
 console.log('############## end step 1');
-g.step();
+console.log(g.step());
 console.log('############## end step 2');
-console.log(g.frontier);
-g.step();
+console.log(g.step());
 console.log('############## end step 3');
