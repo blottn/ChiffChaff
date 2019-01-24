@@ -1,30 +1,36 @@
 // Test Data
 
 var t_data = require('./data.js');
+var namer = require('./name.js');
 
-function graph(ent, kinds) {
+
+function graph(ent, kinds, prefix, ctx) {
     this.ent = ent;
     this.ctx = {};
     this.nodes = {};
     // represents values that can change in the next cycle
     // this should probably initially be all values
-    this.frontier = []; 
+    this.frontier = [];
 
     [ent.i, ent.o, ent.architecture.signals].map((set) => {
         Object.keys(set).map((name) => {
             this.nodes[name] = createDefaultNode(name);
             // initialise values in context
             if (name in ent.i) {
-                this.ctx[name] = ent.i[name]
+                this.nodes[name].state = ent.i[name];
+            }
+            if (name in ent.o) {
+                this.nodes[name].state = ent.o[name];
             }
             if (name in ent.architecture.signals) {
-                this.ctx[name] = ent.architecture.signals[name];
+                this.nodes[name].state = ent.architecture.signals[name];
             }
         });
     });
     
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
+
         let sub_entity = new graph(kinds[descriptor.kind]);
         this.nodes[name] = new node({
             name : name,
@@ -33,16 +39,18 @@ function graph(ent, kinds) {
         });
         // add as child correctly
         descriptor.depends.map((p) => {
-            this.nodes[p].children.push(name);
+            this.nodes[name].parents[p] = this.nodes[p];
+            this.nodes[p].children[name] = this.nodes[name];
         });
     });
 
     // link the nodes
     Object.keys(ent.architecture.logic).map((name) => {
         let logic = ent.architecture.logic[name];
-        this.nodes[name].combiner = logic.combiner;
+        this.nodes[name].logic = logic.combiner;
         logic.depends.map((p) => {
-            this.nodes[p].children.push(name);
+            this.nodes[name].parents[p] = this.nodes[p];
+            this.nodes[p].children[name] = this.nodes[name];
         });
     });
 
@@ -50,9 +58,8 @@ function graph(ent, kinds) {
         let nf = []
         this.frontier.map((node) => {
             let unstable = this.nodes[node].step(this.ctx);
-            
             // new unstable nodes
-            unstable.map((n) => {
+            Object.keys(unstable).map((n) => {
                 if (!this.nodes[n].isPrimitive()) {
                     let descriptor = this.ent.architecture.internals[n];
                     Object.keys(descriptor.input_map).filter((key) => {
@@ -69,27 +76,31 @@ function graph(ent, kinds) {
         return this.frontier.filter((x) => { return Object.keys(this.ent.o).includes(x)});
     }
 
-    // TODO change this to adding children of inputs
-    this.restim = () => {
-        this.frontier = this.frontier.concat(Object.keys(ent.i));
+    this.restim = () => { // adds children of inputs to frontier
+        this.frontier = this.frontier.concat(Object.keys(ent.i)
+                .map((name) => Object.keys(this.nodes[name].children))
+                .reduce((acc, current) => acc.concat(current))
+                .filter((val, ind, arr) => arr.indexOf(val) == ind));
     }
-
     this.restim();
 }
 
 function node(opts) {
     this.opts = opts;
     this.logic = opts.logic;
-    this.name = opts.name;
-    this.children = [];
     
+    this.name = opts.name;
+    this.state;
+
+    this.children = {};
+    this.parents = {};
     this.step = function(ctx) {
 
         // return children that need an update (for new frontier);
         let cs = this.children;
 
         if (this.logic instanceof Function) {
-            ctx[this.name] = this.logic.call(ctx);
+            this.state = this.logic.call(this.parents);
         }
         else {
             let changed = this.logic.step();
@@ -122,34 +133,16 @@ function createDefaultNode(name) {
     }});
 }
 
-g = new graph(t_data.ra, {'fa':t_data.fa, 'ra':t_data.ra});
+g = new graph(t_data.ha_new, {'fa':t_data.fa, 'ra':t_data.ra});
 console.log('Completed initialisation\n');
 console.log('DEBUG- simulation:');
-
-
-let i = 1;
-while (g.frontier.length != 0) {
-    console.log('changed outputs next and then frontier: ');
-    console.log(g.step());
-    console.log(g.frontier);
-    console.log(g.nodes['fa2'].logic.ctx);
-    console.log('############## end step: ' + i);
-    i++;
-}
-
-/*
-console.log('changed outputs next and then frontier: ');
 console.log(g.step());
-console.log(g.frontier);
 console.log('############## end step 1');
 console.log('changed outputs next and then frontier: ');
 console.log(g.step());
-console.log(g.frontier);
 console.log('############## end step 2');
 console.log('changed outputs next and then frontier: ');
 console.log(g.step());
-console.log(g.frontier);
 console.log('############## end step 3');
 console.log(g.step());
-console.log(g.frontier);
-console.log('############## end step 4');*/
+console.log('############## end step 4');
