@@ -7,23 +7,43 @@ var namer = require('./name.js');
 function graph(ent, kinds, prefix, ctx) {
     this.ent = ent;
     this.ctx = {};
+    
+    // TODO get rid of this.
     this.nodes = {};
     // represents values that can change in the next cycle
     // this should probably initially be all values
     this.frontier = [];
 
+    this.roots = [];
+
+    // initial node creation
     [ent.i, ent.o, ent.architecture.signals].map((set) => {
         Object.keys(set).map((name) => {
-            this.nodes[name] = createDefaultNode(name);
             // initialise values in context
             if (name in ent.i) {
+                this.nodes[name] = createDefaultNode(name);
                 this.nodes[name].state = ent.i[name];
             }
-            if (name in ent.o) {
-                this.nodes[name].state = ent.o[name];
-            }
-            if (name in ent.architecture.signals) {
-                this.nodes[name].state = ent.architecture.signals[name];
+            else {
+                this.nodes[name] = new node({
+                    name : name,
+                    logic : () => {}
+                });
+                if (name in ent.architecture.logic) {
+                    let logic = ent.architecture.logic[name];
+                    this.nodes[name].logic = logic.combiner;
+                    logic.depends.map((p) => {
+                        this.nodes[name].parents[p] = this.nodes[p];
+                        this.nodes[p].children.push(this.nodes[name]);
+                    });
+                }
+                if (name in ent.o) {
+                    this.nodes[name].state = ent.o[name];
+                }
+
+                if (name in ent.architecture.signals) {
+                    this.nodes[name].state = ent.architecture.signals[name];
+                }
             }
         });
     });
@@ -40,28 +60,17 @@ function graph(ent, kinds, prefix, ctx) {
         // add as child correctly
         descriptor.depends.map((p) => {
             this.nodes[name].parents[p] = this.nodes[p];
-            this.nodes[p].children[name] = this.nodes[name];
+            this.nodes[p].children.push(this.nodes[name]);
         });
     });
-
-    // link the nodes
-    Object.keys(ent.architecture.logic).map((name) => {
-        let logic = ent.architecture.logic[name];
-        this.nodes[name].logic = logic.combiner;
-        logic.depends.map((p) => {
-            this.nodes[name].parents[p] = this.nodes[p];
-            this.nodes[p].children[name] = this.nodes[name];
-        });
-    });
-
     this.step = function() {
         let nf = []
         this.frontier.map((node) => {
-            let unstable = this.nodes[node].step(this.ctx);
+            let unstable = node.step(this.ctx);
             // new unstable nodes
-            Object.keys(unstable).map((n) => {
-                if (!this.nodes[n].isPrimitive()) {
-                    let descriptor = this.ent.architecture.internals[n];
+            unstable.map((n) => {
+                if (!n.isPrimitive()) {
+                    let descriptor = this.ent.architecture.internals[n.name];
                     Object.keys(descriptor.input_map).filter((key) => {
                         // Mark it as unstable
                     });
@@ -78,7 +87,7 @@ function graph(ent, kinds, prefix, ctx) {
 
     this.restim = () => { // adds children of inputs to frontier
         this.frontier = this.frontier.concat(Object.keys(ent.i)
-                .map((name) => Object.keys(this.nodes[name].children))
+                .map((name) => this.nodes[name].children)
                 .reduce((acc, current) => acc.concat(current))
                 .filter((val, ind, arr) => arr.indexOf(val) == ind));
     }
@@ -92,7 +101,7 @@ function node(opts) {
     this.name = opts.name;
     this.state;
 
-    this.children = {};
+    this.children = [];
     this.parents = {};
     this.step = function(ctx) {
 
@@ -138,6 +147,7 @@ g = new graph(t_data.ha_new, {'fa':t_data.fa, 'ra':t_data.ra});
 console.log('Completed initialisation\n');
 console.log('DEBUG- simulation:');
 console.log(g.step());
+console.log(g.nodes['a'].children);
 console.log('############## end step 1');
 console.log('changed outputs next and then frontier: ');
 console.log(g.step());
