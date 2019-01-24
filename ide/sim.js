@@ -129,6 +129,7 @@ function node(opts) {
 
 function createDefaultNode(name) {
     return new node({name : name, logic : function() {
+        // this can probably be scrapped
         return this.children;
     }});
 }
