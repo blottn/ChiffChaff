@@ -16,6 +16,7 @@ function graph(ent, kinds, prefix, ctx) {
 
     this.roots = [];
 
+    // TODO condense and compartmentalise this into helper functions
     // initial node creation
     [ent.i, ent.o, ent.architecture.signals].map((set) => {
         Object.keys(set).map((name) => {
@@ -64,7 +65,7 @@ function graph(ent, kinds, prefix, ctx) {
         });
     });
     this.step = function() {
-        let nf = []
+        let nf = [];
         this.frontier.map((node) => {
             let unstable = node.step(this.ctx);
             // new unstable nodes
