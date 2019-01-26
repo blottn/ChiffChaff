@@ -4,7 +4,7 @@ var t_data = require('./data.js');
 var namer = require('./name.js');
 
 
-function graph(ent, kinds, prefix, ctx) {
+function graph(ent, kinds) {
     this.ent = ent;
     this.ctx = {};
     
@@ -52,7 +52,7 @@ function graph(ent, kinds, prefix, ctx) {
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
 
-        let sub_entity = new graph(kinds[descriptor.kind]);
+        let sub_entity = new graph(kinds[descriptor.kind], kinds);
         this.nodes[name] = new node({
             name : name,
             logic : sub_entity,
