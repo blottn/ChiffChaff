@@ -6,15 +6,12 @@ var namer = require('./name.js');
 
 function graph(ent, kinds) {
     this.ent = ent;
-    this.ctx = {};
     
-    // TODO get rid of this.
-    nodes = {};
-    // represents values that can change in the next cycle
     // this should probably initially be all values
     this.frontier = [];
-
     this.roots = [];
+
+    nodes = {};
 
     // TODO condense and compartmentalise this into helper functions
     // initial node creation
@@ -48,10 +45,6 @@ function graph(ent, kinds) {
             }
         });
     });
-
-    //Object.keys(ent.i).map((input) => {
-        
-   // });
     
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
@@ -71,7 +64,7 @@ function graph(ent, kinds) {
     this.step = function() {
         let nf = [];
         this.frontier.map((node) => {
-            let unstable = node.step(this.ctx);
+            let unstable = node.step();
             // new unstable nodes
             unstable.map((n) => {
                 if (!n.isPrimitive()) {
@@ -108,7 +101,7 @@ function node(opts) {
 
     this.children = [];
     this.parents = {};
-    this.step = function(ctx) {
+    this.step = function() {
 
         // return children that need an update (for new frontier);
         let cs = this.children;
@@ -123,7 +116,6 @@ function node(opts) {
             var cc = changed.map((item) => {
                 let name = this.opts.descriptor.output_map[item];
                 // set the value
-                ctx[name] = this.logic.ctx[item];
                 return name;
             });
 
