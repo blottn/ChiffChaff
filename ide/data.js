@@ -26,11 +26,11 @@ module.exports = {
             logic: {
                 's': {
                     depends : ['a', 'b'],
-                    combiner : function () {return this.a.state ^ this.b.state;}
+                    combiner : function (inputs) {return inputs.a.state ^ inputs.b.state;}
                 },
                 'c': {
                     depends : ['a', 'b'],
-                    combiner : function () {return this.a.state & this.b.state; }
+                    combiner : function (inputs) {return inputs.a.state & inputs.b.state; }
                 }
             }
         }

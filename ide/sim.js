@@ -11,41 +11,31 @@ function graph(ent, kinds) {
     this.frontier = [];
     this.roots = [];
 
-    nodes = {};
+    this.nodes = {};
 
-    // TODO condense and compartmentalise this into helper functions
-    // initial node creation
+    // first create placeholder nodes
     [ent.i, ent.o, ent.architecture.signals].map((set) => {
         Object.keys(set).map((name) => {
-            // initialise values in context
-            if (name in ent.i) {
-                nodes[name] = createDefaultNode(name);
-                nodes[name].state = ent.i[name];
-            }
-            else {
-                nodes[name] = new node({
-                    name : name,
-                    logic : () => {}
-                });
-                if (name in ent.architecture.logic) {
-                    let logic = ent.architecture.logic[name];
-                    nodes[name].logic = logic.combiner;
-                    logic.depends.map((p) => {
-                        nodes[name].parents[p] = nodes[p];
-                        nodes[p].children.push(nodes[name]);
-                    });
+            this.nodes[name] = new node({
+                name : name,
+                state : set[name],
+                logic : function() {
+                    return this.children;
                 }
-                if (name in ent.o) {
-                    nodes[name].state = ent.o[name];
-                }
-
-                if (name in ent.architecture.signals) {
-                    nodes[name].state = ent.architecture.signals[name];
-                }
-            }
+            });
         });
     });
-    
+
+    // go back over and tie them all together
+    Object.keys(ent.architecture.logic).map((name) => {
+        ent.architecture.logic[name].depends.map((par) => {
+            this.nodes[par].children.push(this.nodes[name]);
+            this.nodes[name].parents[par] = this.nodes[par];
+        });
+        this.nodes[name].logic = ent.architecture.logic[name].combiner;
+    });
+
+    // TODO fix this to link directly into the graph
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
 
@@ -61,7 +51,9 @@ function graph(ent, kinds) {
             nodes[p].children.push(nodes[name]);
         });
     });
+
     this.step = function() {
+        console.log(this.frontier);
         let nf = [];
         this.frontier.map((node) => {
             let unstable = node.step();
@@ -80,12 +72,13 @@ function graph(ent, kinds) {
         });
         // return the items in the frontier that changed
         this.frontier = nf;
+        console.log(this.frontier);
         return this.frontier.filter((x) => { return Object.keys(this.ent.o).includes(x)});
     }
 
     this.restim = () => { // adds children of inputs to frontier
         this.frontier = this.frontier.concat(Object.keys(ent.i)
-                .map((name) => nodes[name].children)
+                .map((name) => this.nodes[name].children)
                 .reduce((acc, current) => acc.concat(current))
                 .filter((val, ind, arr) => arr.indexOf(val) == ind));
     }
@@ -94,10 +87,10 @@ function graph(ent, kinds) {
 
 function node(opts) {
     this.opts = opts;
+
     this.logic = opts.logic;
-    
     this.name = opts.name;
-    this.state;
+    this.state = opts.state;
 
     this.children = [];
     this.parents = {};
@@ -107,7 +100,7 @@ function node(opts) {
         let cs = this.children;
 
         if (this.logic instanceof Function) {
-            this.state = this.logic.call(this.parents);
+            this.state = this.logic(this.parents);
         }
         else {
             let changed = this.logic.step();
