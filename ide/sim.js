@@ -9,7 +9,7 @@ function graph(ent, kinds) {
     
     // this should probably initially be all values
     this.frontier = [];
-    this.roots = [];
+    this.inputs = [];
 
     this.nodes = {};
 
@@ -33,6 +33,11 @@ function graph(ent, kinds) {
             this.nodes[name].parents[par] = this.nodes[par];
         });
         this.nodes[name].logic = ent.architecture.logic[name].combiner;
+    });
+
+    // create inputs list
+    Object.keys(ent.i).map((input) => {
+        inputs.push(this.nodes[input]);
     });
 
     // TODO fix this to link directly into the graph
