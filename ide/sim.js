@@ -25,7 +25,7 @@ function graph(ent, kinds) {
         });
     });
 
-    // TODO fix this to link directly into the graph should probably happen before node linking to avoid undef pointers
+    // TODO fix this to link directly into the graph
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
 
