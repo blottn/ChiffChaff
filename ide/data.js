@@ -8,24 +8,6 @@ module.exports = {
             logic: {
                 's': {
                     depends : ['a', 'b'],
-                    combiner : function () { return this.a ^ this.b; }
-                },
-                'c': {
-                    depends : ['a', 'b'],
-                    combiner : function () { return this.a & this.b; }
-                }
-            }
-        }
-    },
-
-    ha_new : {
-        i : {'a':1, 'b':1},
-        o : {'s':0, 'c':0},
-        architecture : {
-            signals: {},
-            logic: {
-                's': {
-                    depends : ['a', 'b'],
                     combiner : function (inputs) {return inputs.a.state ^ inputs.b.state;}
                 },
                 'c': {
@@ -43,15 +25,15 @@ module.exports = {
             logic: {
                 's' : {
                     depends : ['a', 'b'],
-                    combiner : function() { return this.a ^this.b; }
+                    combiner : function(inputs) { return inputs.a.state ^inputs.b.state; }
                 },
                 'z' : {
                     depends : ['a', 'b', 'cin'],
-                    combiner : function() { return this.a ^this.b ^this.cin; }
+                    combiner : function(inputs) { return inputs.a.state ^inputs.b.state ^inputs.cin.state; }
                 },
                 'cout' : {
                     depends : ['a','b','cin','s'],
-                    combiner : function() { return (this.a &&this.b )||(this.cin &&this.s ); }
+                    combiner : function(inputs) { return (inputs.a.state &&inputs.b.state )||(inputs.cin.state &&inputs.s.state ); }
                 }
             }
         }
@@ -65,13 +47,13 @@ module.exports = {
                 'fa1': {
                     kind : 'fa',
                     depends : ['a','b','cin'],
-                    input_map : {'a':'a[0]','b':'b[0]','cin':'cin'},
+                    input_map : {'a':'a','b':'b','cin':'cin'},
                     output_map : {'z':'z','cout':'c'}
                 },
                 'fa2': {
                     kind : 'fa',
                     depends : ['a', 'b', 'c'],
-                    input_map : {'a':'a[1]','b':'b[1]','cin':'c[0]'},
+                    input_map : {'a':'a','b':'b','cin':'c'},
                     output_map : {'z':'z','cout':'cout'}
                 },
             },
