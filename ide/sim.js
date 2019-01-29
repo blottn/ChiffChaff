@@ -19,24 +19,10 @@ function graph(ent, kinds) {
                 name : name,
                 state : set[name],
                 logic : function() {
-                    return this.children;
+                    return this.state; // default to no change
                 }
             });
         });
-    });
-
-    // go back over and tie them all together
-    Object.keys(ent.architecture.logic).map((name) => {
-        ent.architecture.logic[name].depends.map((par) => {
-            this.nodes[par].children.push(this.nodes[name]);
-            this.nodes[name].parents[par] = this.nodes[par];
-        });
-        this.nodes[name].logic = ent.architecture.logic[name].combiner;
-    });
-
-    // create inputs list
-    Object.keys(ent.i).map((input) => {
-        inputs.push(this.nodes[input]);
     });
 
     // TODO fix this to link directly into the graph should probably happen before node linking to avoid undef pointers
@@ -56,6 +42,21 @@ function graph(ent, kinds) {
             nodes[name].parents[p] = nodes[p];
             nodes[p].children.push(nodes[name]);
         });
+    });
+
+
+    // go back over and tie them all together
+    Object.keys(ent.architecture.logic).map((name) => {
+        ent.architecture.logic[name].depends.map((par) => {
+            this.nodes[par].children.push(this.nodes[name]);
+            this.nodes[name].parents[par] = this.nodes[par];
+        });
+        this.nodes[name].logic = ent.architecture.logic[name].combiner;
+    });
+
+    // create inputs list
+    Object.keys(ent.i).map((input) => {
+        inputs.push(this.nodes[input]);
     });
 
     this.step = function() {
