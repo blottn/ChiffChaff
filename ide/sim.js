@@ -1,7 +1,6 @@
 // Test Data
 
 var t_data = require('./data.js');
-var namer = require('./name.js');
 
 
 function graph(ent, kinds) {
@@ -40,16 +39,18 @@ function graph(ent, kinds) {
         inputs.push(this.nodes[input]);
     });
 
-    // TODO fix this to link directly into the graph
+    // TODO fix this to link directly into the graph should probably happen before node linking to avoid undef pointers
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
 
         let sub_entity = new graph(kinds[descriptor.kind], kinds);
+
         nodes[name] = new node({
             name : name,
             logic : sub_entity,
             descriptor : ent.architecture.internals[name]
         });
+
         // add as child correctly
         descriptor.depends.map((p) => {
             nodes[name].parents[p] = nodes[p];
