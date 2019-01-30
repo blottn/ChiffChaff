@@ -160,7 +160,7 @@ function createDefaultNode(name) {
     }});
 }
 
-g = new graph(t_data.ra, t_data);
+g = new graph(t_data.tight, t_data);
 g.restim();
 console.log('Completed initialisation\n');
 console.log('DEBUG- simulation:');

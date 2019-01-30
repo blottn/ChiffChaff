@@ -60,5 +60,38 @@ module.exports = {
             signals: {'c':0},
             logic: []
         }
+    },
+
+    identity : {
+        i : {'a': 1},
+        o : {'b': 0},
+        architecture : {
+            signals: {},
+            logic: {
+                'b' : {
+                    'depends' : ['a'],
+                    combiner : function(inputs) { return inputs.a.state;}
+                }
+            }
+        }
+    },
+
+    tight : {
+        i : {'a':1},
+        o : {'b':0},
+        architecture : {
+            internals : {
+                'id': {
+                    kind : 'identity',
+                    depends : ['a'],
+                    input_map : {'a':'a'},
+                    output_map : {'b':'b'}
+                },
+            },
+            signals: {},
+            logic: {
+            }
+        }
     }
+
 };
