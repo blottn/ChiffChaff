@@ -150,4 +150,6 @@ function node(opts) {
     }
 }
 
-
+module.export = {
+    graph : graph
+}
