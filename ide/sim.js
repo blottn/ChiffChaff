@@ -1,6 +1,3 @@
-// Test Data
-var t_data = require('./data.js');
-
 function graph(ent, kinds) {
     this.ent = ent;
     
@@ -153,23 +150,4 @@ function node(opts) {
     }
 }
 
-function createDefaultNode(name) {
-    return new node({name : name, logic : function() {
-        // this can probably be scrapped
-        return this.children;
-    }});
-}
 
-g = new graph(t_data.tight, t_data);
-g.restim();
-console.log('Completed initialisation\n');
-console.log('DEBUG- simulation:');
-g.step();
-console.log('############## end step 1');
-g.step();
-console.log('############## end step 2');
-g.step()
-console.log('############## end step 3');
-g.step()
-console.log(g.toString(''));
-console.log('############## end step 4');
