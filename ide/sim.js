@@ -1,7 +1,5 @@
 // Test Data
-
 var t_data = require('./data.js');
-
 
 function graph(ent, kinds) {
     this.ent = ent;
@@ -84,6 +82,7 @@ function graph(ent, kinds) {
                         return child;
                 });
             });
+            new_node.logic = old_out.logic;
             return new_node;
         });
     });
@@ -91,7 +90,6 @@ function graph(ent, kinds) {
     
     
     this.step = function() {
-        console.log(this.frontier);
         let nf = [];
         this.frontier.map((node) => {
             let unstable = node.step();
@@ -104,7 +102,6 @@ function graph(ent, kinds) {
         });
         // return the items in the frontier that changed
         this.frontier = nf;
-        console.log(nf);
         return this.frontier;
     }
 
@@ -120,7 +117,7 @@ function graph(ent, kinds) {
         txt += prefix + 'nodes:\n';
         Object.keys(this.nodes).map((name) => {
             let node = this.nodes[name];
-            txt += prefix + '' + node.id + ' ' + node.name + ' ' + node.state + '\n';
+            txt += prefix + '' + node.toString();
         });
         
         txt += prefix + 'sub entities:\n';
@@ -151,8 +148,8 @@ function node(opts) {
         return this.children;
     }
 
-    this.isPrimitive = function() {
-        return this.logic instanceof Function;
+    this.toString = function() {
+        return '' + this.id + ' ' + this.name + ' ' + this.state + '\n';
     }
 }
 
@@ -174,5 +171,5 @@ console.log('############## end step 2');
 g.step()
 console.log('############## end step 3');
 g.step()
-console.log('############## end step 4');
 console.log(g.toString(''));
+console.log('############## end step 4');
