@@ -47,17 +47,17 @@ function graph(ent, kinds) {
     });
 
 
-    let sub_ents = {};
+    this.sub_ents = {};
 
     // generate the sub entities
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
-        sub_ents[name] = new graph(kinds[descriptor.kind], kinds);
+        this.sub_ents[name] = new graph(kinds[descriptor.kind], kinds);
     });
 
     // link in the sub entities
-    Object.keys(sub_ents).map((name) => {
-        let current = sub_ents[name];
+    Object.keys(this.sub_ents).map((name) => {
+        let current = this.sub_ents[name];
         let descriptor = ent.architecture.internals[name];
 
         // tether inputs
@@ -74,9 +74,9 @@ function graph(ent, kinds) {
         // tether outputs
         current.outputs = current.outputs.map((old_out) => {
             let new_node = this.nodes[descriptor.output_map[old_out.name]];
+            new_node.parents = old_out.parents;
             Object.keys(old_out.parents).map((p_name) => {
                 par = old_out.parents[p_name];
-                new_node.parents[p_name] = par;
                 par.children = par.children.map((child) => {
                     if (child.id == old_out.id)
                         return new_node;
@@ -113,6 +113,23 @@ function graph(ent, kinds) {
                                 .map((input) => input.children)
                                 .reduce((acc, current) => acc.concat(current))
                                 .filter((val, ind, arr) => arr.indexOf(val) == ind));
+    }
+
+    this.toString = (prefix) => {
+        let txt = prefix + 'state:\n';
+        txt += prefix + 'nodes:\n';
+        Object.keys(this.nodes).map((name) => {
+            let node = this.nodes[name];
+            txt += prefix + '' + node.id + ' ' + node.name + ' ' + node.state + '\n';
+        });
+        
+        txt += prefix + 'sub entities:\n';
+        Object.keys(this.sub_ents).map((name) => {
+            txt += prefix + this.sub_ents[name].toString('\t' + name + ': ');
+            txt += '\n';
+        });
+        
+        return txt;
     }
 }
 
@@ -158,4 +175,4 @@ g.step()
 console.log('############## end step 3');
 g.step()
 console.log('############## end step 4');
-console.log(Object.keys(g.nodes).map((node) => g.nodes[node].name + ' ' + g.nodes[node].state));
+console.log(g.toString(''));
