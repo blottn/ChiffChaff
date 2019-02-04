@@ -1,0 +1,72 @@
+<html>
+    <head>
+        <title>ChiffChaff - Editor</title>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        
+        <!-- d3 -->
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+
+        <!-- code editor-->
+        <link rel="stylesheet" href="lib/codemirror.css">
+        <script src="lib/codemirror.js"></script>
+        <style type="text/css">
+            html, body, .row, .CodeMirror {
+                height: 100%;
+            }
+            
+            .navbar {
+                background-image: url("banner.png");
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar bg-info" style="height:10%">
+            <span class="navbar-brand">ChiffChaff</span>
+        </nav>
+        <div class="container-fluid" style="height:90%;">
+            <div class="row">
+                <div class="col-sm" style="padding-left:0">
+                    <textarea id="editor"></textarea>
+                </div>
+                <div class="col-sm bg-secondary">
+                    <h2 style="color:#17a2b8;text-shadow:-0.5px -0.5px 0 #000,0.5px -0.5px 0 #000,-0.5px 0.5px 0 #000,0.5px 0.5px 0 #000;">
+                        Simulation
+                    </h2>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
+                            <span>A: 0</span>
+                        </li>
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
+                            <span>B: 0</span>
+                        </li>
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
+                            <span>Cin: 0</span>
+                        </li>
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
+                            <span>S: 0</span>
+                        </li>
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
+                            <span>Cout: 0</span>
+                        </li>
+                    </ul>
+                    <button type="button" class="btn btn-info float-right" style="margin:8px;">Step System</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+                lineNumbers: true,
+                mode: "vhdl"
+            });
+        </script>
+    </body>
+</html>
