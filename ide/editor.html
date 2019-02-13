@@ -1,7 +1,10 @@
 <html>
     <head>
         <title>ChiffChaff - Editor</title>
+        <!-- Jquery -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+        <!-- Bootstrap -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -9,14 +12,20 @@
         <!-- d3 -->
         <script src="https://d3js.org/d3.v5.min.js"></script>
 
+        <!-- some custom CSS -->
         <style type="text/css" media="screen">
             html, body, .row, #editor {
                 height: 100%;
+            }
+            #editor {
+                width: 100%;
             }
             .navbar {
                 background-image: url("banner.png");
             }
         </style>
+
+        <!-- ace -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ace.js" integrity="sha256-rfN9xU0ELcvTsc3WUaKlvSVEfzLvFCyl+ID09aieASo=" crossorigin="anonymous"></script>
 
     </head>
@@ -26,14 +35,10 @@
         </nav>
         <div class="container-fluid" style="height:90%;">
             <div class="row">
-                <div class="col-sm" style="padding:0px;width:75%">
-                    <div id="editor">function foo(items) {
-                            var x = "All this is syntax highlighted";
-                            return x;
-                        }
-                    </div>
+                <div class="col-sm-7" style="padding:0px;width:75%">
+                    <div id="editor"></div>
                 </div>
-                <div class="col-sm bg-secondary">
+                <div class="col-sm-5 bg-secondary">
                     <h2 style="color:#17a2b8;text-shadow:-0.5px -0.5px 0 #000,0.5px -0.5px 0 #000,-0.5px 0.5px 0 #000,0.5px 0.5px 0 #000;">
                         Simulation
                     </h2>
@@ -65,16 +70,7 @@
         </div>
 
 
-        <script>
-            var editor = ace.edit("editor");
-            editor.setTheme("ace/theme/monokai");
-            editor.session.setMode("ace/mode/javascript");
+        <script src="./editor.js">
         </script>
-        <!--<script>
-            var editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-                lineNumbers: true,
-                mode: "vhdl"
-            });
-        </script>-->
     </body>
 </html>
