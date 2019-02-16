@@ -11,12 +11,14 @@ function readFromFile(path, handler) {
 }
 
 function stripComments(txt) {
-    return txt.split('\n').map((line) => line.split(primitives.COMMENT_START)[0]);
+    return txt.split('\n').map((line) => line.split(primitives.COMMENT_START)[0])
+                          .join('\n');
 }
 
 function parse(txt) {
     let obj = {};
-    lines = stripComments(txt);
+    let commentless = stripComments(txt);
+
 }
 
 readFromFile('./ra.vhdl', parse);
