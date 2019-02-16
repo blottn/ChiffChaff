@@ -1,5 +1,6 @@
 // file reader for testing:
 var fs = require('fs');
+var primitives = require('./primitives.js');
 
 function readFromFile(path, handler) {
     fs.readFile(path, 'utf8', function(err, contents) {
@@ -10,13 +11,12 @@ function readFromFile(path, handler) {
 }
 
 function stripComments(txt) {
-    
+    return txt.split('\n').map((line) => line.split(primitives.COMMENT_START)[0]);
 }
 
 function parse(txt) {
-    console.log(txt);
     let obj = {};
-    stripComments(txt);
+    lines = stripComments(txt);
 }
 
 readFromFile('./ra.vhdl', parse);
