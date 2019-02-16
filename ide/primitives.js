@@ -1,3 +1,4 @@
 module.exports = {
-    COMMENT_START : '--'
+    COMMENT_START : '--',
+    ENTITIY_START : 'entity'
 };
