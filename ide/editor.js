@@ -1,9 +1,15 @@
 function save_contents(data, f_name) {
-    const dataType = 'data:text/plain;charset=utf-8'
-    let blob = encodeURIComponent(data);
-    $('#download_anchor').attr('href', dataType + blob)
-        .attr('download', f_name)
-        .click();
+    let download_anchor = document.createElement('a');
+
+    document.body.appendChild(download_anchor);
+    
+    let blob = 'data:text/plain;charset=utf-8,' + encodeURIComponent(data);
+    download_anchor.setAttribute('href', blob);
+    download_anchor.setAttribute('download', f_name)
+    
+    download_anchor.click();
+
+    document.body.removeChild(download_anchor);
 }
 
 function init_editor() {
