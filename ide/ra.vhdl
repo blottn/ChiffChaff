@@ -7,7 +7,7 @@ B : in STD_LOGIC_VECTOR (3 downto 0);
 Cin : in STD_LOGIC;
 S : out STD_LOGIC_VECTOR (3 downto 0);
 Cout : out STD_LOGIC);
-end Ripple_Adder;
+end Ripple_Adder; -- test in line comment
 
 architecture Behavioral of Ripple_Adder is
 
