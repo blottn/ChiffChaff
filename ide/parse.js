@@ -20,10 +20,22 @@ function getEntities(txt) {
         entities : [] 
     };
     
-    let entity_regex;
 
-
-    entity_regex = new RegExp('entity\\s([A-Za-z]+\\w*)\\sis\\sPort(.*)(?=end\\s\\1)','gsm');
+    // TODO move these to primitives
+    let entity_start = 'entity';
+    let name_regex = '([A-Za-z]+\\w*)';
+    let is_port = 'is\\sPort\\s*\\(\\s*';
+    let params = '(.*)';
+    let end = '(?=\\);\\s*end\\s*\\1\\s*;)'
+    let entity_regex = new RegExp('(?<='
+                            + entity_start
+                            + '\\s+'
+                            + name_regex
+                            + '\\s+'
+                            + is_port
+                            +')'
+                            + params
+                            + end, 'gsm');
     with(primitives) {
         // find all signatures
 
