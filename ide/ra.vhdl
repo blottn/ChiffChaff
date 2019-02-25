@@ -20,7 +20,7 @@ component full_adder_vhdl_code Port ( A : in STD_LOGIC;
 end component;
 
 -- Intermediate Carry declaration
-signal c1,c2,c3: STD_LOGIC;
+signal c1,c2,c3 : STD_LOGIC;
 
 begin
 

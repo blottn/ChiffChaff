@@ -15,6 +15,19 @@ function stripComments(txt,callback) {
                           .join('\n');
 }
 
+function getInitialVal(type,first,last) {
+    if (type == 'STD_LOGIC') {
+        return 0;
+    }
+    else {
+        let arr = new Array(first - last);
+        for (let i = 0 ; i < first - last ; i++) {
+            arr[i] = 0;
+        }
+        return arr;
+    }
+};
+
 function getEntities(txt) {
     let entities = {};
 
@@ -94,14 +107,58 @@ function getEntities(txt) {
     return entities;
 }
 
+function getArchitecture(entities, txt) {
+    with (primitives) {
+        let arch_start = 'architecture\\s+';
+        let comma_names = NAME + '(?:\\s*,\\s*' + NAME + ')*';
+        let signal = new RegExp('(?<=\\s*)signal\\s+'
+                            + '(' + comma_names + ')'
+                            + '\\s+:\\s*'
+                            + TYPE
+                            + '\\s*;','gsm');
+        let arch_regex = new RegExp(arch_start 
+                                + '(' + NAME + ')'
+                                + '\\s+of\\s+'
+                                + '(' + NAME + ')'
+                                + '\\s+is\\s+'
+                                + '(.*)'
+                                + 'end\\s+\\1\\s*;','gsm');
+
+        let res = '';
+        while (architecture = arch_regex.exec(txt)) {
+            //architecture body
+            let arch_name = architecture[1];
+            let ent_name = architecture[2];
+            let body = architecture[3];
+            entities[ent_name].architecture = {
+                internals : {},
+                signals : {},
+                logic : {}
+            };
+
+            // get signals
+            let signal_decl;
+            while (signal_decl = signal.exec(body)) {
+                let list = signal_decl[1];
+                let type = signal_decl[2];
+                let upper = signal_decl[3];
+                let lower = signal_decl[4];
+                let names = list.split(',');
+
+                names.map((n) => entities[ent_name]['architecture']['signals'][n.trim()] = getInitialVal(type,upper,lower));
+            }
+        }
+    }
+}
 
 function parse(txt) {
     let obj = {};
 
     //TODO change to be more functional
     let commentless = stripComments(txt);
+    commentless = commentless.replace(/\r?\n|\r/gm,' ');
     let partParsed = getEntities(commentless);
-    console.log(partParsed);
+    componentised = getArchitecture(partParsed, commentless);
 }
 
 readFromFile('./ra.vhdl', parse);
