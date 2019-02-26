@@ -34,9 +34,9 @@ function getEntities(txt) {
     // TODO move these to primitives
     let entity_start = 'entity';
     let name_regex = '([A-Za-z]+\\w*)';
-    let is_port = 'is\\sPort\\s*\\(\\s*';
+    let is_port = 'is\\s+Port\\s*\\(\\s*';
     let params = '(.*)';
-    let end = '(?=\\);\\s*end\\s*\\1\\s*;)'
+    let end = '(?=\\)\\s*;\\s*end\\s*\\1\\s*;)'
     let entity_regex = new RegExp('(?<='
                             + entity_start
                             + '\\s+'
@@ -107,15 +107,110 @@ function getEntities(txt) {
     return entities;
 }
 
-function getArchitecture(entities, txt) {
+function getSignals(entity, txt) {
     with (primitives) {
-        let arch_start = 'architecture\\s+';
         let comma_names = NAME + '(?:\\s*,\\s*' + NAME + ')*';
         let signal = new RegExp('(?<=\\s*)signal\\s+'
                             + '(' + comma_names + ')'
                             + '\\s+:\\s*'
                             + TYPE
                             + '\\s*;','gsm');
+
+        let signal_decl;
+        while (signal_decl = signal.exec(txt)) {
+            let list = signal_decl[1];
+            let type = signal_decl[2];
+            let upper = signal_decl[3];
+            let lower = signal_decl[4];
+            let names = list.split(',');
+
+            names.map((n) => entity['architecture']['signals'][n.trim()] = getInitialVal(type,upper,lower));
+        }
+    }
+}
+
+function get_mappings(txt) {
+    with (primitives) {
+        let itemiser = new RegExp('(' + NAME + ')'
+                                + '\\s*:\\s*'
+                                + '(in|out)\\s*'
+                                + TYPE + '\\s*');
+        return txt.split(';').map((component) => {
+            let res = component.trim().match(itemiser);
+            return {
+                name : res[1],
+                kind : res[2],
+                type : res[3]
+
+            };
+        });
+    }
+}
+
+function getComponents(txt) {
+    with (primitives) {
+        let start_component = 'component\\s*'
+                            + '(' + NAME + ')'
+                            + '\\s+Port\\s+\\(\\s*';
+        let mappings = '(.*?)'
+        let end_component = '\\s*\\)\\s*;\\s*'
+                            + 'end\\s*component\\s*;';
+        let component = new RegExp(start_component
+                                + mappings
+                                + end_component
+                                ,'gsm');
+
+        let components = [];
+
+        let res;
+        while (res = component.exec(txt)) {
+            let component_name = res[1];
+            let component_body = res[2];
+            let mappings = get_mappings(component_body);
+            
+            components.push({
+                name : component_name,
+                mappings : mappings
+            });
+        }
+
+        return components;
+    }
+}
+
+function getLogic(entity, components, txt) {
+    let logic_txt = txt.split('begin')[1];
+    with (primitives) {
+        let combinatorial_instantiation = '\\s*(' + NAME + ')'
+                                        + '\\s*'
+                                        + '<='
+                                        + '\\s*(.*?)\\s*'
+                                        + ';';
+
+
+        let component_instantiation = '\\s*(' + NAME + ')'
+                                    + '\\s*'
+                                    + ':'
+                                    + '\\s+'
+                                    + '(' + NAME + ')'
+                                    + '\\s+'
+                                    + 'port\\s+map\\s*\\('
+                                    + '(.*?)'
+                                    + '\\);';
+        let res;
+        let finder = new RegExp(combinatorial_instantiation + '|' + component_instantiation,'gsm');
+        while (res = finder.exec(logic_txt)) {
+            console.log(res);
+        }
+
+                        
+    }
+}
+
+function getArchitecture(entities, txt) {
+    with (primitives) {
+        let arch_start = 'architecture\\s+';
+        let comma_names = NAME + '(?:\\s*,\\s*' + NAME + ')*';
         let arch_regex = new RegExp(arch_start 
                                 + '(' + NAME + ')'
                                 + '\\s+of\\s+'
@@ -124,6 +219,7 @@ function getArchitecture(entities, txt) {
                                 + '(.*)'
                                 + 'end\\s+\\1\\s*;','gsm');
 
+        
         let res = '';
         while (architecture = arch_regex.exec(txt)) {
             //architecture body
@@ -136,17 +232,9 @@ function getArchitecture(entities, txt) {
                 logic : {}
             };
 
-            // get signals
-            let signal_decl;
-            while (signal_decl = signal.exec(body)) {
-                let list = signal_decl[1];
-                let type = signal_decl[2];
-                let upper = signal_decl[3];
-                let lower = signal_decl[4];
-                let names = list.split(',');
-
-                names.map((n) => entities[ent_name]['architecture']['signals'][n.trim()] = getInitialVal(type,upper,lower));
-            }
+            getSignals(entities[ent_name], body);
+            let components = getComponents(body);
+            getLogic(entities[ent_name], components, body);
         }
     }
 }
@@ -159,6 +247,7 @@ function parse(txt) {
     commentless = commentless.replace(/\r?\n|\r/gm,' ');
     let partParsed = getEntities(commentless);
     componentised = getArchitecture(partParsed, commentless);
+    
 }
 
-readFromFile('./ra.vhdl', parse);
+readFromFile('./fa.vhdl', parse);
