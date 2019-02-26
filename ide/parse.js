@@ -197,6 +197,7 @@ function getLogic(entity, components, txt) {
                                     + 'port\\s+map\\s*\\('
                                     + '(.*?)'
                                     + '\\);';
+        // TODO change to be a string replace
         let res;
         let finder = new RegExp(combinatorial_instantiation + '|' + component_instantiation,'gsm');
         while (res = finder.exec(logic_txt)) {
