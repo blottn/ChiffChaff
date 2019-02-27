@@ -201,10 +201,30 @@ function getLogic(entity, components, txt) {
         let res;
         let finder = new RegExp(combinatorial_instantiation + '|' + component_instantiation,'gsm');
         while (res = finder.exec(logic_txt)) {
-            console.log(res);
+            if (res[3] == undefined) { // is a component_instantiation
+                let o = res[1];
+                let combinator = res[2];
+                let operators = new RegExp('xor|or|and|not','igsm');
+                console.log(combinator.match(operators));
+                console.log(combinator);
+                combinator = combinator.replace(operators, (item) => {
+                    item.replace(/xor/i,'^');
+                    item.replace(/or/i,'||');
+                    item.replace(/and/i,'&&');
+                    item.replace(/not/i,'!');
+                });
+                console.log(o);
+                console.log(combinator);
+            }
+            else {
+                let instance_name = res[3];
+                let instance_component = res[4];
+                let instance_mapping = res[5];
+                console.log(instance_name);
+                console.log(instance_component);
+                console.log(instance_mapping);
+            }
         }
-
-                        
     }
 }
 

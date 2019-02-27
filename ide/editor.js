@@ -18,5 +18,5 @@ $(function () {
     // onload
     init_editor();
     
-    save_contents('hello world :D','chaffchaff.vhdl');
+    save_contents('hello world','chaffchaff.vhdl');
 });
