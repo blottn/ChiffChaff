@@ -208,10 +208,10 @@ function getLogic(entity, components, txt) {
                 console.log(combinator.match(operators));
                 console.log(combinator);
                 combinator = combinator.replace(operators, (item) => {
-                    item.replace(/xor/i,'^');
-                    item.replace(/or/i,'||');
-                    item.replace(/and/i,'&&');
-                    item.replace(/not/i,'!');
+                    return item.replace(/xor/i,'^')
+                        .replace(/or/i,'||')
+                        .replace(/and/i,'&&')
+                        .replace(/not/i,'!');
                 });
                 console.log(o);
                 console.log(combinator);
