@@ -1,6 +1,7 @@
 // file reader for testing:
-var fs = require('fs');
-var symbols = require('./symbols.js');
+const fs = require('fs');
+const vernac = require('vernac');
+const symbols = require('./symbols.js');
 
 function readFromFile(path, handler) {
     fs.readFile(path, 'utf8', function(err, contents) {
@@ -10,7 +11,7 @@ function readFromFile(path, handler) {
     });
 }
 
-function stripComments(txt,callback) {
+function stripComments(txt) {
     return txt.split('\n').map((line) => line.split(symbols.COMMENT_START)[0])
                           .join('\n');
 }
