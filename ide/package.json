@@ -12,6 +12,6 @@
     "mocha": "^5.0.5"
   },
   "dependencies": {
-    "vernac": "^1.0.1"
+    "vernac": "^1.2.0"
   }
 }
