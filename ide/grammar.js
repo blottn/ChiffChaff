@@ -36,6 +36,8 @@ const vector_type = new Terminal('STD_LOGIC_VECTOR')
 
 const type = vector_type.or(logic_type);
 
+
+// Entity
 const port_item = ident
     .then('\\s+', ignore)
     .then(':', ignore)
@@ -70,12 +72,26 @@ const entity = new Terminal('entity')
     .then('\\s*\\)\\s*;', ignore);
 
 
-// entity port
-const port_start = new Terminal('\\s+is\\s+Port');
+//architecture
+const comma_separated_names = ident
+    .then(
+        new Terminal('\\s*,\\s*')
+            .then(ident, (r) => r.ast.right)
+            .times(0)
+    )
+    .listen((r) => [r.ast.left].concat(r.ast.right));
 
-const entity_start = new Terminal('entity\\s+')
-    .then(ident, ast.Ident.builder)
-    .then(port_start);
+const signal_decl = new Terminal('signal\\s+')
+    .then(comma_separated_names, (r) => r.ast.right)
+    .then('\\s*:\\s*', ignore)
+    .then(type);
 
+const architecture = new Terminal('\\s*architecture\\s*')
+    .then(ident, (r) => r.ast.right)
+    .then('\\s+of\\s+', ignore)
+    .then(ident)
+    .then('\\s+is\\s+', ignore)
+    .then('begin\\s+', ignore)
+    .then('end', ignore);
 
-
+console.log(signal_decl.parse('signal asdf, abc : STD_LOGIC'));
