@@ -1,3 +1,4 @@
+const ast = require('./ast.js');
 const {Terminal : Terminal, Empty: Empty} = require('vernac');
 
 class Ident {
@@ -6,10 +7,75 @@ class Ident {
     }
 }
 
-const ident = new Terminal('[A-Za-z]+\\w*');
+// bit of utility
+const ignore = (r) => r.ast.left;
+const one_space = new Terminal('\\s+');
+const zero_space = new Terminal('\\s*');
 
-ident.listen((res) => {
-    return new Ident(res.result);
-});
+// primitive items
+const ident = new Terminal('[A-Za-z]+\\w*', ast.Ident.builder);
+const direction = new Terminal('in').or(new Terminal('out'), ast.Dir.builder);
+const logic_type = new Terminal('STD_LOGIC');
+const vector_type = new Terminal('STD_LOGIC_VECTOR')
+    .then(zero_space, ignore)
+    .then('\\(',ignore)
+    .then('\\s*',ignore)
+    .then('\\d+')
+    .then('\\s+', ignore)
+    .then('downto', ignore)
+    .then('\\s+', ignore)
+    .then('\\d+')
+    .then('\\)', ignore)
+    .listen((res) => {
+        return {
+            type: 'vector',
+            high: res.ast.left.left.right,
+            low: res.ast.left.right
+        };
+    });
+
+const type = vector_type.or(logic_type);
+
+const port_item = ident
+    .then('\\s+', ignore)
+    .then(':', ignore)
+    .then('\\s+', ignore)
+    .then(direction)
+    .then('\\s+', ignore)
+    .then(type, (r) => {
+        return {
+            name : r.ast.left.left.name,
+            dir : r.ast.left.right.dir,
+            type : r.ast.right
+        };
+    });
+
+const port_contents = port_item
+    .then(new Terminal('\\s*;\\s*')
+    .then(port_item, (r) => r.ast.right)
+    .times(0), (res) => {
+        return [res.ast.left].concat(res.ast.right);
+    });
+
+const entity = new Terminal('entity')
+    .then('\\s+', ignore)
+    .then(ident, (r) => r.ast.right)
+    .then('\\s+', ignore)
+    .then('is', ignore)
+    .then('\\s+', ignore)
+    .then('Port', ignore)
+    .then('\\s*', ignore)
+    .then('\\(\\s*', ignore)
+    .then(port_contents)
+    .then('\\s*\\)\\s*;', ignore);
+
+
+// entity port
+const port_start = new Terminal('\\s+is\\s+Port');
+
+const entity_start = new Terminal('entity\\s+')
+    .then(ident, ast.Ident.builder)
+    .then(port_start);
+
 
 
