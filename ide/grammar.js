@@ -14,6 +14,23 @@ const zero_space = new Terminal('\\s*');
 
 // primitive items
 const ident = new Terminal('[A-Za-z]+\\w*', ast.Ident.builder);
+const indexed = ident
+    .then(new Terminal('\\s*')
+        .then('\\(')
+        .then('\\s*')
+        .then('\\d*', r => r.ast.right)
+        .then('\\s*', ignore)
+        .then('\\)', ignore)
+        .optionally(),
+        (r) => {
+            return {
+                name : r.ast.left.name,
+                index : r.ast.right ? r.ast.right : '0',
+                type : r.ast.right ? 'vector' : 'logic'
+            }
+        });
+
+
 const direction = new Terminal('in').or(new Terminal('out'), ast.Dir.builder);
 const logic_type = new Terminal('STD_LOGIC');
 const vector_type = new Terminal('STD_LOGIC_VECTOR')
@@ -121,7 +138,6 @@ expr = item.then(
         .times(0)
         .listen((r) => {
              return !r.ast.length ? {} : r.ast.reduce((acc, item) => {
-                //acc.right = item;
                 return {
                     left : acc,
                     right : item.right,
@@ -137,15 +153,34 @@ expr = item.then(
         return tree;
     });
 
-item.second.first.second = expr;
-
-console.log(JSON.stringify(expr.parse('(A AND B) OR (Cin AND A) OR (Cin AND B)').ast));
-
-//expr.parse('a XOR b XOR c');
-//expr.parse('asdf XOR (inside_name)').ast
+item.second.first.second = expr; //quietly ignore this please
 
 const combinatorial_stat = ident
     .then('\\s*<=\\s*', ignore)
+    .then(expr)
+    .then('\\s*;', ignore);
+
+const comma_indexed = indexed
+    .then(new Terminal('\\s*')
+        .then(',')
+        .then('\\s*')
+        .then(indexed, r => r.ast.right)
+        .times(0),
+        (r) => [r.ast.left].concat(r.ast.right)
+    );
+
+const component_stat = ident
+    .then('\\s*:\\s*', ignore)
+    .then(ident)
+    .then('\\s+', ignore)
+    .then('port', ignore)
+    .then('\\s+', ignore)
+    .then('map', ignore)
+    .then('\\s*', ignore)
+    .then('\\(', ignore)
+    .then('\\s*', ignore)
+    .then(comma_indexed);
+
 
 const architecture = new Terminal('\\s*architecture\\s*')
     .then(ident, (r) => r.ast.right)
