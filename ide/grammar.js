@@ -39,9 +39,9 @@ const type = vector_type.or(logic_type);
 
 // Entity
 const port_item = ident
-    .then('\\s+', ignore)
+    .then('\\s*', ignore)
     .then(':', ignore)
-    .then('\\s+', ignore)
+    .then('\\s*', ignore)
     .then(direction)
     .then('\\s+', ignore)
     .then(type, (r) => {
@@ -86,6 +86,67 @@ const signal_decl = new Terminal('signal\\s+')
     .then('\\s*:\\s*', ignore)
     .then(type);
 
+const component_decl = new Terminal('component\\s+')
+    .then(ident, (r) => r.ast.right)
+    .then('\\s+Port\\s*\\(', ignore)
+    .then(port_contents)
+    .then('\\s*\\)\\s*;', (r) => {
+        return {
+            kind: r.ast.left.left.name,
+            mapping: r.ast.left.right
+        };
+    });
+
+// bit hacky for now TODO support recursive grammars in vernac
+
+let expr;
+let operator = new Terminal('\\s+').then('XOR', r => r.ast.right)
+    .or(new Terminal('\\s+').then('AND', r => r.ast.right))
+    .or(new Terminal('\\s+').then('XOR', r => r.ast.right))
+    .or(new Terminal('\\s+').then('OR', r => r.ast.right));
+
+let item = ident
+    .or(new Terminal('\\(').then(expr, r => r.ast.right).then('\\)',ignore));
+
+expr = item.then(
+    operator
+        .then('\\s+', ignore)
+        .then(item, (r) => {
+            return {
+                combiner: r.ast.left,
+                left: undefined,
+                right: r.ast.right
+            };
+        })
+        .times(0)
+        .listen((r) => {
+             return !r.ast.length ? {} : r.ast.reduce((acc, item) => {
+                //acc.right = item;
+                return {
+                    left : acc,
+                    right : item.right,
+                    combiner : item.combiner
+                };
+            });
+        }))
+    .listen((res) => {
+        let tree = res.ast.right;
+        let current;
+        for (current = tree; current.left != undefined; current = current.left) {}
+        current.left = res.ast.left;
+        return tree;
+    });
+
+item.second.first.second = expr;
+
+console.log(JSON.stringify(expr.parse('(A AND B) OR (Cin AND A) OR (Cin AND B)').ast));
+
+//expr.parse('a XOR b XOR c');
+//expr.parse('asdf XOR (inside_name)').ast
+
+const combinatorial_stat = ident
+    .then('\\s*<=\\s*', ignore)
+
 const architecture = new Terminal('\\s*architecture\\s*')
     .then(ident, (r) => r.ast.right)
     .then('\\s+of\\s+', ignore)
@@ -94,4 +155,3 @@ const architecture = new Terminal('\\s*architecture\\s*')
     .then('begin\\s+', ignore)
     .then('end', ignore);
 
-console.log(signal_decl.parse('signal asdf, abc : STD_LOGIC'));
