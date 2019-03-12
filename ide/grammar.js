@@ -101,21 +101,23 @@ const comma_separated_names = ident
 const signal_decl = new Terminal('signal\\s+')
     .then(comma_separated_names, (r) => r.ast.right)
     .then('\\s*:\\s*', ignore)
-    .then(type);
+    .then(type)
+    .then('\\s*;', ignore);
 
 const component_decl = new Terminal('component\\s+')
     .then(ident, (r) => r.ast.right)
-    .then('\\s+Port\\s*\\(', ignore)
+    .then('\\s+Port\\s*\\(\\s*', ignore)
     .then(port_contents)
-    .then('\\s*\\)\\s*;', (r) => {
+    .then('\\s*\\)\\s*;\\s*end\\s+component\\s*;', (r) => {
         return {
             kind: r.ast.left.left.name,
             mapping: r.ast.left.right
         };
     });
 
-// bit hacky for now TODO support recursive grammars in vernac
 
+
+// bit hacky for now TODO support recursive grammars in vernac
 let expr;
 let operator = new Terminal('\\s+').then('XOR', r => r.ast.right)
     .or(new Terminal('\\s+').then('AND', r => r.ast.right))
@@ -181,12 +183,42 @@ const component_stat = ident
     .then('\\s*', ignore)
     .then(comma_indexed);
 
+const stat = (new Terminal('\\s*').then(component_decl, r => r.ast.right))
+    .or(new Terminal('\\s*').then(signal_decl, r => r.ast.right));
+
+const stats = stat.times(0);
 
 const architecture = new Terminal('\\s*architecture\\s*')
     .then(ident, (r) => r.ast.right)
     .then('\\s+of\\s+', ignore)
     .then(ident)
     .then('\\s+is\\s+', ignore)
+    .then(stat.times(0))
     .then('begin\\s+', ignore)
-    .then('end', ignore);
+    .then('end', ignore)
+    .then('\\s+', ignore)
+    .then(ident)
+    .then('\\s*;', ignore);
+
+let temp_ra = `
+architecture Behavioral of Ripple_Adder is
+
+component full_adder_vhdl_code Port ( A : in STD_LOGIC;
+                                      B : in STD_LOGIC;
+                                      Cin : in STD_LOGIC;
+                                      S : out STD_LOGIC;
+                                      Cout : out STD_LOGIC);
+end component;
+
+signal c1,c2,c3 : STD_LOGIC;
+
+begin
+
+FA1: full_adder_vhdl_code port map( A(0), B(0), Cin, S(0), c1);
+FA2: full_adder_vhdl_code port map( A(1), B(1), c1, S(1), c2);
+FA3: full_adder_vhdl_code port map( A(2), B(2), c2, S(2), c3);
+FA4: full_adder_vhdl_code port map( A(3), B(3), c3, S(3), Cout);
+
+end Behavioral;`
+console.log(architecture.parse(temp_ra));
 
