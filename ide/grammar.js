@@ -18,7 +18,7 @@ const indexed = ident
     .then(new Terminal('\\s*')
         .then('\\(')
         .then('\\s*')
-        .then('\\d*', r => r.ast.right)
+        .then('\\d+', r => r.ast.right)
         .then('\\s*', ignore)
         .then('\\)', ignore)
         .optionally(),
@@ -29,6 +29,7 @@ const indexed = ident
                 type : r.ast.right ? 'vector' : 'logic'
             }
         });
+
 
 
 const direction = new Terminal('in').or(new Terminal('out'), ast.Dir.builder);
@@ -86,7 +87,10 @@ const entity = new Terminal('entity')
     .then('\\s*', ignore)
     .then('\\(\\s*', ignore)
     .then(port_contents)
-    .then('\\s*\\)\\s*;', ignore);
+    .then('\\s*\\)\\s*;\\s*', ignore)
+    .then('end\\s+', ignore)
+    .then(ident)
+    .then('\\s*;', ignore);
 
 
 //architecture
@@ -157,10 +161,11 @@ expr = item.then(
 
 item.second.first.second = expr; //quietly ignore this please
 
-const combinatorial_stat = ident
+const combinatorial_stat = new Terminal('\\s*')
+    .then(ident, r => r.ast.right)
     .then('\\s*<=\\s*', ignore)
     .then(expr)
-    .then('\\s*;', ignore);
+    .then('\\s*;\\s*', ignore);
 
 const comma_indexed = indexed
     .then(new Terminal('\\s*')
@@ -171,7 +176,8 @@ const comma_indexed = indexed
         (r) => [r.ast.left].concat(r.ast.right)
     );
 
-const component_stat = ident
+const component_stat = new Terminal('\\s*')
+    .then(ident, r => r.ast.right)
     .then('\\s*:\\s*', ignore)
     .then(ident)
     .then('\\s+', ignore)
@@ -181,7 +187,14 @@ const component_stat = ident
     .then('\\s*', ignore)
     .then('\\(', ignore)
     .then('\\s*', ignore)
-    .then(comma_indexed);
+    .then(comma_indexed)
+    .then('\\s*\\)\\s*;\\s*', (r) => {
+        return {
+            name : r.ast.left.left.left.name,
+            type : r.ast.left.left.right.name,
+            map : r.ast.left.right
+        };
+    });
 
 const stat = (new Terminal('\\s*').then(component_decl, r => r.ast.right))
     .or(new Terminal('\\s*').then(signal_decl, r => r.ast.right));
@@ -194,13 +207,23 @@ const architecture = new Terminal('\\s*architecture\\s*')
     .then(ident)
     .then('\\s+is\\s+', ignore)
     .then(stat.times(0))
-    .then('begin\\s+', ignore)
+    .then('\\s*begin\\s+', ignore)
+    .then(component_stat.or(combinatorial_stat).times(0))
     .then('end', ignore)
     .then('\\s+', ignore)
     .then(ident)
     .then('\\s*;', ignore);
 
-let temp_ra = `
+const program = entity.or('\\s+').or(architecture).times(0);
+
+let ra = `entity Ripple_Adder is
+Port ( A : in STD_LOGIC_VECTOR (3 downto 0);
+B : in STD_LOGIC_VECTOR (3 downto 0);
+Cin : in STD_LOGIC;
+S : out STD_LOGIC_VECTOR (3 downto 0);
+Cout : out STD_LOGIC);
+end Ripple_Adder;
+
 architecture Behavioral of Ripple_Adder is
 
 component full_adder_vhdl_code Port ( A : in STD_LOGIC;
@@ -220,5 +243,22 @@ FA3: full_adder_vhdl_code port map( A(2), B(2), c2, S(2), c3);
 FA4: full_adder_vhdl_code port map( A(3), B(3), c3, S(3), Cout);
 
 end Behavioral;`
-console.log(architecture.parse(temp_ra));
 
+let fa = `entity full_adder_vhdl_code is
+ Port ( A : in STD_LOGIC;
+ B : in STD_LOGIC;
+ Cin : in STD_LOGIC;
+ S : out STD_LOGIC;
+ Cout : out STD_LOGIC);
+end full_adder_vhdl_code;
+
+architecture gate_level of full_adder_vhdl_code is
+
+begin
+
+ S <= A XOR B XOR Cin ;
+ Cout <= (A AND B) OR (Cin AND A) OR (Cin AND B) ;
+
+end gate_level;`
+
+console.log(program.parse(fa));
