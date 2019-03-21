@@ -1,6 +1,3 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-
 entity full_adder_vhdl_code is
  Port ( A : in STD_LOGIC;
  B : in STD_LOGIC;
@@ -18,4 +15,3 @@ begin
 
 end gate_level;
 
--- https://allaboutfpga.com/vhdl-code-for-full-adder/

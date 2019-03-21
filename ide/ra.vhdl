@@ -1,6 +1,3 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-
 entity Ripple_Adder is
 Port ( A : in STD_LOGIC_VECTOR (3 downto 0);
 B : in STD_LOGIC_VECTOR (3 downto 0);
