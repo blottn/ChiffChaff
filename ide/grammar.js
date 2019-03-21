@@ -90,7 +90,13 @@ const entity = new Terminal('entity')
     .then('\\s*\\)\\s*;\\s*', ignore)
     .then('end\\s+', ignore)
     .then(ident)
-    .then('\\s*;', ignore);
+    .then('\\s*;', (r) => {
+        return {
+            def: r.ast.left.left.left.name,
+            mappings: r.ast.left.left.right,
+            end: r.ast.left.right.name
+        };
+    });
 
 
 //architecture
@@ -237,8 +243,15 @@ const architecture = new Terminal('\\s*architecture\\s*')
     .then(ident)
     .then('\\s*;', ignore)
     .listen((r) => {
-        console.log(JSON.stringify(r.ast.left));
-        return r.ast.left;
+        return {
+            def: {
+                name: r.ast.left.left.left.left.left.name,
+                kind: r.ast.left.left.left.left.right.name
+            },
+            pre_stat: r.ast.left.left.left.right,
+            post_stat: r.ast.left.left.left.right,
+            end: r.ast.left.right.name
+        };
     });
 
 
