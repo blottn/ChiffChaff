@@ -196,69 +196,75 @@ const component_stat = new Terminal('\\s*')
         };
     });
 
-const stat = (new Terminal('\\s*').then(component_decl, r => r.ast.right))
-    .or(new Terminal('\\s*').then(signal_decl, r => r.ast.right));
+const stat = new Terminal('\\s+')
+    .or(component_decl, (r) => {
+        if (typeof r.ast === 'string') {
+            return {
+                type: 'white'
+            }
+        }
+        else {
+            return {
+                type: 'component',
+                contents: r.ast
+            };
+        }
+    })
+    .or(signal_decl, (r) => {
+        if (r.ast.type) {
+            return r.ast
+        }
+        else {
+            return {
+                type: 'signal',
+                contents: r.ast
+            };
+        }
+    }).times(0, r => r.ast.filter((i) => i.type !== 'white'));
 
-const stats = stat.times(0);
 
 const architecture = new Terminal('\\s*architecture\\s*')
     .then(ident, (r) => r.ast.right)
     .then('\\s+of\\s+', ignore)
     .then(ident)
     .then('\\s+is\\s+', ignore)
-    .then(stat.times(0))
+    .then(stat)
     .then('\\s*begin\\s+', ignore)
     .then(component_stat.or(combinatorial_stat).times(0))
     .then('end', ignore)
     .then('\\s+', ignore)
     .then(ident)
-    .then('\\s*;', ignore);
+    .then('\\s*;', ignore)
+    .listen((r) => {
+        console.log(JSON.stringify(r.ast.left));
+        return r.ast;
+    });
 
-const program = entity.or('\\s+').or(architecture).times(0);
 
-let ra = `entity Ripple_Adder is
-Port ( A : in STD_LOGIC_VECTOR (3 downto 0);
-B : in STD_LOGIC_VECTOR (3 downto 0);
-Cin : in STD_LOGIC;
-S : out STD_LOGIC_VECTOR (3 downto 0);
-Cout : out STD_LOGIC);
-end Ripple_Adder;
+const program = entity.or('\\s+', (r) => {
+    if (typeof r.ast === 'string') {
+        return {
+            type: 'white'
+        };
+    }
+    else {
+        return {
+            type: 'entity',
+            contents: r.ast
+        };
+    }
+}).or(architecture, (r) => {
+    if (r.ast.type) {
+        return r.ast;
+    }
+    else {
+        return {
+            type: 'architecture',
+            contents: r.ast
+        };
+    }
+}).times(0, (r) => {
+    return r.ast.filter((item) => item.type !== 'white');
+});
 
-architecture Behavioral of Ripple_Adder is
-
-component full_adder_vhdl_code Port ( A : in STD_LOGIC;
-                                      B : in STD_LOGIC;
-                                      Cin : in STD_LOGIC;
-                                      S : out STD_LOGIC;
-                                      Cout : out STD_LOGIC);
-end component;
-
-signal c1,c2,c3 : STD_LOGIC;
-
-begin
-
-FA1: full_adder_vhdl_code port map( A(0), B(0), Cin, S(0), c1);
-FA2: full_adder_vhdl_code port map( A(1), B(1), c1, S(1), c2);
-FA3: full_adder_vhdl_code port map( A(2), B(2), c2, S(2), c3);
-FA4: full_adder_vhdl_code port map( A(3), B(3), c3, S(3), Cout);
-
-end Behavioral;`
-
-let fa = `entity full_adder_vhdl_code is
- Port ( A : in STD_LOGIC;
- B : in STD_LOGIC;
- Cin : in STD_LOGIC;
- S : out STD_LOGIC;
- Cout : out STD_LOGIC);
-end full_adder_vhdl_code;
-
-architecture gate_level of full_adder_vhdl_code is
-
-begin
-
- S <= A XOR B XOR Cin ;
- Cout <= (A AND B) OR (Cin AND A) OR (Cin AND B) ;
-
-end gate_level;`
-
-console.log(program.parse(fa));
+module.exports = program
