@@ -196,7 +196,7 @@ const component_stat = new Terminal('\\s*')
         };
     });
 
-const stat = new Terminal('\\s+')
+const pre_stat = new Terminal('\\s+')
     .or(component_decl, (r) => {
         if (typeof r.ast === 'string') {
             return {
@@ -222,22 +222,23 @@ const stat = new Terminal('\\s+')
         }
     }).times(0, r => r.ast.filter((i) => i.type !== 'white'));
 
+const post_stat = component_stat.or(combinatorial_stat).times(0);
 
 const architecture = new Terminal('\\s*architecture\\s*')
     .then(ident, (r) => r.ast.right)
     .then('\\s+of\\s+', ignore)
     .then(ident)
     .then('\\s+is\\s+', ignore)
-    .then(stat)
+    .then(pre_stat)
     .then('\\s*begin\\s+', ignore)
-    .then(component_stat.or(combinatorial_stat).times(0))
+    .then(post_stat)
     .then('end', ignore)
     .then('\\s+', ignore)
     .then(ident)
     .then('\\s*;', ignore)
     .listen((r) => {
         console.log(JSON.stringify(r.ast.left));
-        return r.ast;
+        return r.ast.left;
     });
 
 
