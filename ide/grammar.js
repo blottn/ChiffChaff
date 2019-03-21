@@ -33,7 +33,11 @@ const indexed = ident
 
 
 const direction = new Terminal('in').or(new Terminal('out'), ast.Dir.builder);
-const logic_type = new Terminal('STD_LOGIC');
+const logic_type = new Terminal('STD_LOGIC', (r) => {
+    return {
+        type: 'logic'
+    };
+});
 const vector_type = new Terminal('STD_LOGIC_VECTOR')
     .then(zero_space, ignore)
     .then('\\(',ignore)
@@ -171,7 +175,13 @@ const combinatorial_stat = new Terminal('\\s*')
     .then(ident, r => r.ast.right)
     .then('\\s*<=\\s*', ignore)
     .then(expr)
-    .then('\\s*;\\s*', ignore);
+    .then('\\s*;\\s*', (r) => {
+        return {
+            kind: 'combinatorial',
+            lhs: r.ast.left.left.name,
+            rhs: r.ast.left.right
+        };
+    });
 
 const comma_indexed = indexed
     .then(new Terminal('\\s*')
@@ -196,6 +206,7 @@ const component_stat = new Terminal('\\s*')
     .then(comma_indexed)
     .then('\\s*\\)\\s*;\\s*', (r) => {
         return {
+            kind : 'component',
             name : r.ast.left.left.left.name,
             type : r.ast.left.left.right.name,
             map : r.ast.left.right
@@ -249,7 +260,7 @@ const architecture = new Terminal('\\s*architecture\\s*')
                 kind: r.ast.left.left.left.left.right.name
             },
             pre_stat: r.ast.left.left.left.right,
-            post_stat: r.ast.left.left.left.right,
+            post_stat: r.ast.left.left.right,
             end: r.ast.left.right.name
         };
     });
