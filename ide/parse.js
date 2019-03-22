@@ -48,7 +48,62 @@ function build(ast) {
             kinds[entity_ast.def] = ent;
         }
         else if (item.type === 'architecture') {
-            console.log(item.contents);
+            let arch_ast = item.contents;
+
+            // init if it doesn't exist
+            if (!(arch_ast.def.name in kinds)) {
+                let ent = {
+                    i: {},
+                    o: {},
+                    architecture: {
+                        internals: {},
+                        signals: {},
+                        logic: {}
+                    }
+                };
+                kinds[arch_ast.def.name] = ent;
+            }
+
+            ent = kinds[arch_ast.def.name];
+
+            buildPreStats(ent, arch_ast.pre_stat);
+            buildPostStats(ent, arch_ast.post_stat);
+        }
+    }
+}
+
+function buildPreStats(ent, preStats) {
+    for (stat of preStats) {
+        if (stat.type === 'component') {
+            let comp_ast = stat.contents;
+            console.log(comp_ast);
+        }
+        else if (stat.type === 'signal') {
+            let signal_ast = stat.contents;
+            let type = signal_ast.right;
+            let initial_val = 0;
+            if (type.type === 'vector') {
+                initial_val = [];
+                for (let i = 0; i < type.high ; i++) {
+                    initial_val.push(0);
+                }
+            }
+            let names = signal_ast.left;
+            for (name of names) {
+                ent.architecture.signals[name.name] = initial_val;
+            }
+        }
+    }
+    return ent;
+}
+
+function buildPostStats(ent, postStats) {
+    for (stat of postStats) {
+        if (stat.kind === 'combinatorial') {
+
+        }
+        else if (stat.kind === 'component') {
+
         }
     }
 }
@@ -58,8 +113,7 @@ function parse(txt) {
 
     //TODO change to be more functional
     let commentless = stripComments(txt);
-    console.log(program.parse(commentless));
     build(program.parse(commentless).ast);
 }
 
-readFromFile('./fa.vhdl', parse);
+readFromFile('./ra.vhdl', parse);
