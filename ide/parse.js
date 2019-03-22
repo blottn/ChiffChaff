@@ -51,7 +51,7 @@ function build(ast) {
             let arch_ast = item.contents;
 
             // init if it doesn't exist
-            if (!(arch_ast.def.name in kinds)) {
+            if (!(arch_ast.def.kind in kinds)) {
                 let ent = {
                     i: {},
                     o: {},
@@ -61,22 +61,27 @@ function build(ast) {
                         logic: {}
                     }
                 };
-                kinds[arch_ast.def.name] = ent;
+                kinds[arch_ast.def.kind] = ent;
             }
 
-            ent = kinds[arch_ast.def.name];
+            ent = kinds[arch_ast.def.kind];
 
-            buildPreStats(ent, arch_ast.pre_stat);
-            buildPostStats(ent, arch_ast.post_stat);
+            let out = buildPreStats(ent, arch_ast.pre_stat);
+            buildPostStats(out, arch_ast.post_stat);
         }
     }
 }
 
 function buildPreStats(ent, preStats) {
+    let out = {
+        ent: ent,
+        components: {}
+    };
+
     for (stat of preStats) {
         if (stat.type === 'component') {
             let comp_ast = stat.contents;
-            console.log(comp_ast);
+            out.components[comp_ast.kind] = comp_ast.mapping;
         }
         else if (stat.type === 'signal') {
             let signal_ast = stat.contents;
@@ -90,20 +95,67 @@ function buildPreStats(ent, preStats) {
             }
             let names = signal_ast.left;
             for (name of names) {
-                ent.architecture.signals[name.name] = initial_val;
+                if (type.type === 'vector') {
+                    ent.architecture.signals[name.name] = Array.from(initial_val);
+                }
+                else {
+                    ent.architecture.signals[name.name] = initial_val;
+                }
             }
         }
     }
-    return ent;
+    return out;
 }
 
-function buildPostStats(ent, postStats) {
+function flattenExpr(tree) {
+    if (tree.combiner) {
+        return '( ' + flattenExpr(tree.left)
+            + ' '
+            + tree.combiner
+            + ' '
+            + flattenExpr(tree.right) + ' )';
+    }
+    else {
+        return tree.name;
+    }
+}
+
+function buildPostStats(ctx, postStats) {
+    ent = ctx.ent;
+    comps = ctx.components;
     for (stat of postStats) {
         if (stat.kind === 'combinatorial') {
-
+            let step = stat;
+            let exprString = flattenExpr(step.rhs);
+            let expr = exprString.replace(/AND/g, ' && ')
+                .replace(/XOR/g, ' ^ ')
+                .replace(/NOT/g, ' ! ')
+                .replace(/OR/g, ' || ')
+                .replace(/[A-Za-z]+\w*(?:\((\d+)\))?/g, (name, index) => {
+                    return 'inputs.' 
+                        + name 
+                        + '.state' 
+                        + (index ? '[' + index + ']' : '');
+                });
+            ent.architecture.logic[step.lhs] = new Function('inputs', 'return ' + expr + ' ;');
         }
         else if (stat.kind === 'component') {
-
+            let mappings = comps[stat.type];
+            ent.architecture.internals[stat.name] = {
+                kind: stat.type,
+                depends: [], // TODO
+                input_map : {},
+                output_map : {}
+            };
+            for (var i = 0; i < stat.map.length ; i++) {
+                let map_set;
+                if (mappings[i].dir === 'in') {
+                    map_set = ent.architecture.internals[stat.name].input_map;
+                } else if (mappings[i].dir === 'out') {
+                    map_set = ent.architecture.internals[stat.name].output_map;
+                }
+                map_set[mappings[i].name] = stat.map[i].name;
+            }
         }
     }
 }
@@ -116,4 +168,4 @@ function parse(txt) {
     build(program.parse(commentless).ast);
 }
 
-readFromFile('./ra.vhdl', parse);
+readFromFile('./fa.vhdl', parse);
