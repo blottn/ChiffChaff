@@ -11,7 +11,6 @@ function graph(ent, kinds) {
 
     // first create placeholder nodes
     [ent.i, ent.o, ent.architecture.signals].map((set) => {
-        console.log(set);
         Object.keys(set).map((name) => {
             this.nodes[name] = new node({
                 name : name,

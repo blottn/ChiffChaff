@@ -186,7 +186,7 @@ function parse(txt) {
     //TODO change to be more functional
     let commentless = stripComments(txt);
     let kinds = build(program.parse(commentless).ast);
-    let sim_item = kinds[Object.keys(kinds)[0]];
+    let sim_item = kinds[Object.keys(kinds)[1]];
     let g = new graph(sim_item, kinds);
     g.restim();
 }
