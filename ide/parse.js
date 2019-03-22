@@ -2,6 +2,8 @@
 const fs = require('fs');
 const symbols = require('./symbols.js');
 const program = require('./grammar.js');
+const {graph : graph} = require('./sim.js');
+
 
 function readFromFile(path, handler) {
     fs.readFile(path, 'utf8', function(err, contents) {
@@ -67,9 +69,11 @@ function build(ast) {
             ent = kinds[arch_ast.def.kind];
 
             let out = buildPreStats(ent, arch_ast.pre_stat);
+            
             buildPostStats(out, arch_ast.post_stat);
         }
     }
+    return kinds;
 }
 
 function buildPreStats(ent, preStats) {
@@ -120,12 +124,22 @@ function flattenExpr(tree) {
     }
 }
 
+function findDependencies(tree) {
+    if (tree.combiner) {
+        return findDependencies(tree.left).concat(findDependencies(tree.right));
+    }
+    else {
+        return [tree.name];
+    }
+}
+
 function buildPostStats(ctx, postStats) {
     ent = ctx.ent;
     comps = ctx.components;
     for (stat of postStats) {
         if (stat.kind === 'combinatorial') {
             let step = stat;
+            let depends = findDependencies(step.rhs);
             let exprString = flattenExpr(step.rhs);
             let expr = exprString.replace(/AND/g, ' && ')
                 .replace(/XOR/g, ' ^ ')
@@ -137,25 +151,31 @@ function buildPostStats(ctx, postStats) {
                         + '.state' 
                         + (index ? '[' + index + ']' : '');
                 });
-            ent.architecture.logic[step.lhs] = new Function('inputs', 'return ' + expr + ' ;');
+            ent.architecture.logic[step.lhs] = {
+                depends: Array.from(new Set(depends)),
+                combiner: new Function('inputs', 'return ' + expr + ' ;')
+            };
         }
         else if (stat.kind === 'component') {
             let mappings = comps[stat.type];
             ent.architecture.internals[stat.name] = {
                 kind: stat.type,
-                depends: [], // TODO
+                depends: [],
                 input_map : {},
                 output_map : {}
             };
+            let depends = [];
             for (var i = 0; i < stat.map.length ; i++) {
                 let map_set;
                 if (mappings[i].dir === 'in') {
                     map_set = ent.architecture.internals[stat.name].input_map;
+                    depends.push(mappings[i].name);
                 } else if (mappings[i].dir === 'out') {
                     map_set = ent.architecture.internals[stat.name].output_map;
                 }
                 map_set[mappings[i].name] = stat.map[i].name;
             }
+            ent.architecture.internals[stat.name].depends = Array.from(new Set(depends));
         }
     }
 }
@@ -165,7 +185,10 @@ function parse(txt) {
 
     //TODO change to be more functional
     let commentless = stripComments(txt);
-    build(program.parse(commentless).ast);
+    let kinds = build(program.parse(commentless).ast);
+    let sim_item = kinds[Object.keys(kinds)[0]];
+    let g = new graph(sim_item, kinds);
+    g.restim();
 }
 
-readFromFile('./fa.vhdl', parse);
+readFromFile('./joined.vhdl', parse);
