@@ -1,13 +1,10 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-
 entity Ripple_Adder is
 Port ( A : in STD_LOGIC_VECTOR (3 downto 0);
 B : in STD_LOGIC_VECTOR (3 downto 0);
 Cin : in STD_LOGIC;
 S : out STD_LOGIC_VECTOR (3 downto 0);
 Cout : out STD_LOGIC);
-end Ripple_Adder;
+end Ripple_Adder; -- test in line comment
 
 architecture Behavioral of Ripple_Adder is
 
@@ -20,7 +17,7 @@ component full_adder_vhdl_code Port ( A : in STD_LOGIC;
 end component;
 
 -- Intermediate Carry declaration
-signal c1,c2,c3: STD_LOGIC;
+signal c1,c2,c3 : STD_LOGIC;
 
 begin
 
