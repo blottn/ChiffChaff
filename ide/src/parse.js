@@ -1,6 +1,5 @@
 // file reader for testing:
 const fs = require('fs');
-const symbols = require('./symbols.js');
 const program = require('./grammar.js');
 const {graph : graph} = require('./sim.js');
 
