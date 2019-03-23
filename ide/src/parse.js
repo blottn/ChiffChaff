@@ -1,18 +1,8 @@
 // file reader for testing:
-const fs = require('fs');
 const program = require('./grammar.js');
 const {graph : graph} = require('./sim.js');
 
-
-function readFromFile(path, handler) {
-    fs.readFile(path, 'utf8', function(err, contents) {
-        if (err)
-            console.log(err);
-        handler(contents);
-    });
-}
-
-function stripComments(txt) {
+function strip(txt) {
     return txt.split('\n')
         .map((line) => line.split('--')[0])
         .join('\n');
@@ -180,12 +170,11 @@ function buildPostStats(ctx, postStats) {
 }
 
 function parse(txt) {
-    //TODO change to be more functional
-    let commentless = stripComments(txt);
-    let kinds = build(program.parse(commentless).ast);
-    let sim_item = kinds[Object.keys(kinds)[1]];
-    let g = new graph(sim_item, kinds);
-    g.restim();
+    return build(program.parse(strip(txt)).ast);
+    
+    //let sim_item = kinds[Object.keys(kinds)[1]];
+    //let g = new graph(sim_item, kinds);
+    //g.restim();
 }
 
-readFromFile('../vhdl/joined.vhdl', parse);
+module.exports = parse;
