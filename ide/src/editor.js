@@ -18,6 +18,7 @@ function init(id) {
     let session = editor.getSession();
     session.setMode("ace/mode/vhdl");
     session.setUseWrapMode(true);
+    return editor;
 }
 
 module.exports = {
