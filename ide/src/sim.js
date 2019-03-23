@@ -109,7 +109,7 @@ function graph(ent, kinds) {
                                 .filter((val, ind, arr) => arr.indexOf(val) == ind));
     }
 
-    this.toString = (prefix) => {
+    this.toString = (prefix = '') => {
         let txt = prefix + 'state:\n';
         txt += prefix + 'nodes:\n';
         Object.keys(this.nodes).map((name) => {

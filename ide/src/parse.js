@@ -14,7 +14,7 @@ function readFromFile(path, handler) {
 
 function stripComments(txt) {
     return txt.split('\n')
-        .map((line) => line.split(symbols.COMMENT_START)[0])
+        .map((line) => line.split('--')[0])
         .join('\n');
 }
 
@@ -180,8 +180,6 @@ function buildPostStats(ctx, postStats) {
 }
 
 function parse(txt) {
-    let obj = {};
-
     //TODO change to be more functional
     let commentless = stripComments(txt);
     let kinds = build(program.parse(commentless).ast);
@@ -190,4 +188,4 @@ function parse(txt) {
     g.restim();
 }
 
-readFromFile('./joined.vhdl', parse);
+readFromFile('../vhdl/joined.vhdl', parse);
