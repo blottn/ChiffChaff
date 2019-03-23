@@ -1,4 +1,4 @@
-function save_contents(data, f_name) {
+function save(data, f_name) {
     let download_anchor = document.createElement('a');
 
     document.body.appendChild(download_anchor);
@@ -12,17 +12,15 @@ function save_contents(data, f_name) {
     document.body.removeChild(download_anchor);
 }
 
-function init_editor() {
-    var editor = ace.edit("editor");
+function init(id) {
+    var editor = ace.edit(id);
     editor.setTheme("ace/theme/monokai");
     let session = editor.getSession();
     session.setMode("ace/mode/vhdl");
     session.setUseWrapMode(true);
 }
 
-$(function () {
-    // onload
-    init_editor();
-    
-    save_contents('hello world','chaffchaff.vhdl');
-});
+module.exports = {
+    init: init,
+    save: save
+}
