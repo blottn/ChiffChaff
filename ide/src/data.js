@@ -39,13 +39,13 @@ component full_adder_vhdl_code Port ( A : in STD_LOGIC;
 end component;
 
 -- Intermediate Carry declaration
-signal c1,c2,c3 : STD_LOGIC;
+signal c1 : STD_LOGIC;
 
 begin
 
 -- Port Mapping Full Adder 4 times
 FA1: full_adder_vhdl_code port map( A, C, Cin, Y, c1);
-FA2: full_adder_vhdl_code port map( B, D, c1, Z, c2);
+FA2: full_adder_vhdl_code port map( B, D, c1, Z, Cout);
 
 end Behavioral;`
 
