@@ -66,5 +66,6 @@ function display(s) {
 
     let inputs = s.getInputs();
     let outputs = s.getOutputs();
+    // clear timings first
     let timings = new Timings(inputs, outputs, list);
 }

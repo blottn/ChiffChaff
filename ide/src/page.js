@@ -1,4 +1,18 @@
-const itemBase = '<li class="list-group-item"><span style="display: inline; float: left;">Name</span><div height="50px;" style="display: inline; float: right;"></div></li>';
+const itemBase = `<li class="list-group-item">
+        <span style="display: inline; float: left;">Name</span>
+        <button type="button" class="btn btn-info" style="margin:8px;display:none;">
+            Flip
+        </button>
+        <div height="50px;" style="display: inline; float: right;">
+        </div>
+    </li>`;
+
+const width = 250;
+const height = 32;
+const margin = 4;
+const lightGreen = '#78ff01';
+               
+
 
 function transformData(list) {
     return list.map((item, index) => {return {x: index, y: item};});
@@ -10,17 +24,18 @@ class Timings {
         this.outputs = outputs;
         this.rootNode = root;
 
-        let createNodes = (list, root) => {
-            for (let i = 0 ; i < inputs.length ; i++) {
+        let createNodes = (list, root, flipOpts) => {
+            for (let i = 0 ; i < list.length ; i++) {
                 let node = $(itemBase);
                 let name = node.find('span');
                 let div = node.find('div');
+                name.text(list[i].name);
+                
+                if (flipOpts) {
+                    node.find('button').attr('style', 'float:left;display:inline;margin:8px; margin-left:36px;');
+                }
                
-                const width = 350;
-                const height = 32;
-                const margin = 4;
-                const lightGreen = '#78ff01';
-                let data = transformData([0,1,1,1,0,0,1,0]);
+               let data = transformData([0,1,1,1,0,0,1,0]);
 
                 let yScale = d3.scaleLinear().range([height - margin, margin]);
                 let xScale = d3.scaleLinear().range([margin,width - margin]);
@@ -72,7 +87,7 @@ class Timings {
             }
         }
 
-        createNodes(this.inputs, this.rootNode);   
+        createNodes(this.inputs, this.rootNode, true);
         createNodes(this.outputs, this.rootNode);
     }
 
