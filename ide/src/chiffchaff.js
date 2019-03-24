@@ -8,22 +8,11 @@ const editorId = 'editor';
 const selectorId = '#selector';
 const listId = '#sim-items';
 
-let simObj;
+let sim;
+let kinds;
 
-window.onload = function() {
-    let ed = editor.init(editorId);
-    ed.on('change', reload)
-    
-    ed.setValue(data.sampleVHDL);
-
-    $('#stepper').click(() => {
-        if (simObj) 
-        console.log('step');
-    });
-}
-
-function getSelected() {
-    return $(selectorId)[0].options[$(selectorId)[0].selectedIndex].value;
+function getSelected(selector = $(selectorId)[0]) {
+    return selector.options[selector.selectedIndex].value;
 }
 
 function updateSelector(kinds) {
@@ -37,18 +26,42 @@ function updateSelector(kinds) {
     }
 }
 
+function selectorChange(evt) {
+    console.log(evt);
+    if (sim) {
+        sim.use(getSelected(evt.target))
+    }
+    else if (kinds) {
+        sim = new Sim(getSelected(evt.target), kinds);
+    }
+}
+
+window.onload = function() {
+    let ed = editor.init(editorId);
+    ed.on('change', reload)
+    
+    console.log(parse(data.sampleVHDL));
+
+
+    ed.setValue(data.sampleVHDL);
+    $(selectorId).on('change', selectorChange)
+    $('#stepper').click(() => {
+        if (simObj) 
+        console.log('step');
+    });
+}
+
 function reload(changed) {
     let ed = editor.get(editorId);
-    let kinds = parse(ed.getValue());
+    kinds = parse(ed.getValue());
+
     updateSelector(kinds);
     display();
 }
 
 function display() {
    // let selected = getSelected()
-    
     let listQuery = $('#sim-items');
     listQuery.empty();
     let list = listQuery[0];
-    
 }

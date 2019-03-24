@@ -154,8 +154,9 @@ class Sim{
     constructor(name, ctx) {
         this.ctx = ctx;
         this.name = name;
-        use(name)
-        this.graph = new graph(ctx[name], ctx); 
+        if (name in this.ctx) {
+            this.graph = new graph(ctx[name], ctx);
+        }
     }
 
     step() {
