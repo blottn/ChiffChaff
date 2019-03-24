@@ -169,6 +169,16 @@ class Sim{
             this.graph = new graph(this.ctx[name], this.ctx);
         }
     }
+
+    getInputs() {
+        return Object.keys(this.graph.ent.i).map();
+    }
+
+    getOutputs() {
+        return Object.keys(this.graph.ent.o).map((name) => {
+            console.log(name)
+        });
+    }
 }
 
 module.exports = {

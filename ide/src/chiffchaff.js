@@ -27,12 +27,21 @@ function updateSelector(kinds) {
 }
 
 function selectorChange(evt) {
-    console.log(evt);
+    updateSim(evt.target, kinds);
     if (sim) {
         sim.use(getSelected(evt.target))
     }
     else if (kinds) {
         sim = new Sim(getSelected(evt.target), kinds);
+    }
+}
+
+function updateSim(name = getSelected()) {
+    if (sim) {
+        sim.use(name);
+    }
+    else if (kinds) {
+        sim = new Sim(name, kinds);
     }
 }
 
@@ -43,7 +52,6 @@ window.onload = function() {
     ed.setValue(data.sampleVHDL);
     $(selectorId).on('change', selectorChange)
     $('#stepper').click(() => {
-        if (simObj) 
         console.log('step');
     });
 }
@@ -52,14 +60,18 @@ function reload(changed) {
     console.log('reloaded');
     let ed = editor.get(editorId);
     kinds = parse(ed.getValue());
-    console.log(kinds);
     updateSelector(kinds);
-    display();
+    updateSim();
+    display(sim);
 }
 
-function display() {
-   // let selected = getSelected()
+function display(s) {
     let listQuery = $('#sim-items');
     listQuery.empty();
     let list = listQuery[0];
+
+    let inputs = s.getInputs();
+    let outputs = s.getOutputs();
+    
+
 }
