@@ -86,7 +86,8 @@ function buildPreStats(ent, preStats) {
                 }
             }
             let names = signal_ast.left;
-            for (name of names) {
+            for (let i = 0 ; i < names.length; i++) {
+                let name = names[i];
                 if (type.type === 'vector') {
                     ent.architecture.signals[name.name] = Array.from(initial_val);
                 }
