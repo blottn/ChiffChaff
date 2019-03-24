@@ -10,7 +10,7 @@ const itemBase = `<li class="list-group-item">
 const width = 250;
 const height = 32;
 const margin = 4;
-const lightGreen = '#78ff01';
+const lightGreen = '#17a2b8';
                
 
 
@@ -35,7 +35,7 @@ class Timings {
                     node.find('button').attr('style', 'float:left;display:inline;margin:8px; margin-left:36px;');
                 }
                
-               let data = transformData([0,1,1,1,0,0,1,0]);
+                let data = transformData([0,1,1,1,0,0,1,0]);
 
                 let yScale = d3.scaleLinear().range([height - margin, margin]);
                 let xScale = d3.scaleLinear().range([margin,width - margin]);
