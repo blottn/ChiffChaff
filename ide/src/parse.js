@@ -1,5 +1,3 @@
-// file reader for testing:
-const fs = require('fs');
 const program = require('./grammar.js');
 const {Sim : Sim} = require('./sim.js');
 
@@ -177,15 +175,5 @@ function parse(txt) {
     //let g = new graph(sim_item, kinds);
     //g.restim();
 }
-
-fs.readFile('./test.vhdl', 'utf8', (err, res) => {
-    if (err) {
-        console.log(err);
-    }
-    else {
-        let kinds = parse(res);
-        new Sim('Ripple_Adder', kinds);
-    }
-});
 
 module.exports = parse;
