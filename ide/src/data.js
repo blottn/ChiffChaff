@@ -18,10 +18,13 @@ begin
 end gate_level;
 
 entity Ripple_Adder is
-Port ( A : in STD_LOGIC_VECTOR (3 downto 0);
-B : in STD_LOGIC_VECTOR (3 downto 0);
+Port ( A : in STD_LOGIC;
+B : in STD_LOGIC;
+C : in STD_LOGIC;
+D : in STD_LOGIC;
 Cin : in STD_LOGIC;
-S : out STD_LOGIC_VECTOR (3 downto 0);
+Y : out STD_LOGIC;
+Z : out STD_LOGIC;
 Cout : out STD_LOGIC);
 end Ripple_Adder; -- test in line comment
 
@@ -41,10 +44,8 @@ signal c1,c2,c3 : STD_LOGIC;
 begin
 
 -- Port Mapping Full Adder 4 times
-FA1: full_adder_vhdl_code port map( A(0), B(0), Cin, S(0), c1);
-FA2: full_adder_vhdl_code port map( A(1), B(1), c1, S(1), c2);
-FA3: full_adder_vhdl_code port map( A(2), B(2), c2, S(2), c3);
-FA4: full_adder_vhdl_code port map( A(3), B(3), c3, S(3), Cout);
+FA1: full_adder_vhdl_code port map( A, C, Cin, Y, c1);
+FA2: full_adder_vhdl_code port map( B, D, c1, Z, c2);
 
 end Behavioral;`
 
