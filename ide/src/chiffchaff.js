@@ -40,9 +40,6 @@ window.onload = function() {
     let ed = editor.init(editorId);
     ed.on('change', reload)
     
-    console.log(parse(data.sampleVHDL));
-
-
     ed.setValue(data.sampleVHDL);
     $(selectorId).on('change', selectorChange)
     $('#stepper').click(() => {
@@ -52,9 +49,10 @@ window.onload = function() {
 }
 
 function reload(changed) {
+    console.log('reloaded');
     let ed = editor.get(editorId);
     kinds = parse(ed.getValue());
-
+    console.log(kinds);
     updateSelector(kinds);
     display();
 }
