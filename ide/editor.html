@@ -20,6 +20,14 @@
             #editor {
                 width: 100%;
             }
+            h2 {
+                display: inline;
+                float:left;
+            }
+            select {
+                display: inline;
+                float: right;
+            }
             .navbar {
                 background-image: url("banner.png");
             }
@@ -43,34 +51,21 @@
                     <h2 style="color:#17a2b8;text-shadow:-0.5px -0.5px 0 #000,0.5px -0.5px 0 #000,-0.5px 0.5px 0 #000,0.5px 0.5px 0 #000;">
                         Simulation
                     </h2>
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
-                            <span>A: 0</span>
-                        </li>
-                        <li class="list-group-item">
-                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
-                            <span>B: 0</span>
-                        </li>
-                        <li class="list-group-item">
-                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
-                            <span>Cin: 0</span>
-                        </li>
-                        <li class="list-group-item">
-                            <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
-                            <span>S: 0</span>
-                        </li>
+                    <select style="margin:8px;" id="selector">
+                    </select>
+                    <div class="container overflow-auto" style="height:80%">
+                        <ul class="list-group" id="sim-items">
+                        </ul>
+                    <!--<ul class="list-group">
                         <li class="list-group-item">
                             <button type="button" class="btn btn-info float-left" style="margin-right:8px;">Flip</button>
                             <span>Cout: 0</span>
                         </li>
-                    </ul>
-                    <button type="button" class="btn btn-info float-right" style="margin:8px;">Step System</button>
+                    </ul>-->
                 </div>
+                <button type="button" class="btn btn-info float-right" style="margin:8px;" id="stepper">Step System</button>
             </div>
         </div>
-
-
         <script src="build/chiffchaff.js"></script>
     </body>
 </html>

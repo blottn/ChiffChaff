@@ -150,6 +150,16 @@ function node(opts) {
     }
 }
 
-module.exports = {
-    graph : graph
+class Sim{
+    constructor(name, ctx) {
+        this.graph = new graph(ctx[name], ctx); 
+    }
+
+    step() {
+        this.graph.step();
+    }
 }
+
+module.exports = {
+    Sim: Sim
+};

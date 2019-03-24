@@ -21,7 +21,12 @@ function init(id) {
     return editor;
 }
 
+function getEditor(id) {
+    return ace.edit(id);
+}
+
 module.exports = {
     init: init,
+    get: getEditor,
     save: save
 }
