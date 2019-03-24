@@ -1,8 +1,8 @@
-let parse = require('./parse.js');
-let {Sim: Sim} = require('./sim.js');
-let editor = require('./editor.js');
-let page = require('./page.js');
-let data = require('./data.js');
+const parse = require('./parse.js');
+const {Sim: Sim} = require('./sim.js');
+const editor = require('./editor.js');
+const {Timings: Timings} = require('./page.js');
+const data = require('./data.js');
 
 const editorId = 'editor';
 const selectorId = '#selector';
@@ -27,13 +27,7 @@ function updateSelector(kinds) {
 }
 
 function selectorChange(evt) {
-    updateSim(evt.target, kinds);
-    if (sim) {
-        sim.use(getSelected(evt.target))
-    }
-    else if (kinds) {
-        sim = new Sim(getSelected(evt.target), kinds);
-    }
+    updateSim(getSelected(evt.target));
 }
 
 function updateSim(name = getSelected()) {
@@ -72,6 +66,5 @@ function display(s) {
 
     let inputs = s.getInputs();
     let outputs = s.getOutputs();
-    
-
+    let timings = new Timings(inputs, outputs, list);
 }
