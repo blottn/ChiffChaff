@@ -150,6 +150,11 @@ function node(opts) {
     }
 }
 
+// helper
+function getter(key) {
+    return this.graph.nodes[key];
+}
+
 class Sim{
     constructor(name, ctx) {
         this.ctx = ctx;
@@ -171,13 +176,11 @@ class Sim{
     }
 
     getInputs() {
-        return Object.keys(this.graph.ent.i).map();
+        return Object.keys(this.graph.ent.i).map(getter.bind(this));
     }
 
     getOutputs() {
-        return Object.keys(this.graph.ent.o).map((name) => {
-            console.log(name)
-        });
+        return Object.keys(this.graph.ent.o).map(getter.bind(this));
     }
 }
 
