@@ -18,10 +18,7 @@ function getSelected(selector = $(selectorId)[0]) {
 
 function updateSelector(kinds) {
     let select = $(selectorId)[0];
-    // clear first
-    for (let i = 0; i < select.options.length; i++) {
-        select.options[i] = null;
-    }
+    $(select).empty();
     for (name of Object.keys(kinds)) {
         select.add(new Option(name, name));
     }
