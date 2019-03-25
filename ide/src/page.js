@@ -106,7 +106,7 @@ class Timings {
                     .attr('d', line(tData))
                     .attr('stroke', lightGreen)
                     .attr('fill', '#66666600')
-                    .attr('stroke-width', 1);
+                    .attr('stroke-width', 1.5);
 
                 this.data[list[i].name].svg = svg;
                 this.data[list[i].name].root = div;
