@@ -57,7 +57,7 @@ class Timings {
 
 
                 let yScale = d3.scaleLinear().range([height - margin, margin]);
-                let xScale = d3.scaleLinear().range([margin,width - margin]);
+                let xScale = d3.scaleLinear().range([-1,width]);
                 
                 let xAxis = d3.axisBottom()
                     .scale(xScale)
@@ -79,7 +79,7 @@ class Timings {
                     .y((d) => {
                         return yScale(d.y);
                     })
-                    .curve(d3.curveStep);
+                    .curve(d3.curveStepBefore);
                 
 
                 let svg = d3.select(div[0])
@@ -88,16 +88,24 @@ class Timings {
                     .attr('width', width)
                     .attr('height', height)
                     .append('g');
-                
 
-                svg.append('rect')
+                 svg.append('rect')
                     .attr('fill', 'black')
                     .attr('width', '100%')
                     .attr('height', '100%');
-
+               
+                let grid = svg.append("g")	
+                    .attr("class", "grid")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis
+                        .tickSize(-height)
+                        .tickFormat("")
+                    );
+                
                 svg.append('path')
                     .attr('d', line(tData))
                     .attr('stroke', lightGreen)
+                    .attr('fill', '#66666600')
                     .attr('stroke-width', 1);
 
                 this.data[list[i].name].svg = svg;
