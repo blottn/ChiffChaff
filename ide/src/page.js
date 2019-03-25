@@ -73,15 +73,15 @@ class Timings {
                         return yScale(d.y);
                     })
                     .curve(d3.curveStep);
+                
 
                 let svg = d3.select(div[0])
                     .append('svg')
                     .attr('fill', 'black')
                     .attr('width', width)
                     .attr('height', height)
-                    .append('g')
+                    .append('g');
                 
-                this.data[list[i].name].svg = svg;
 
                 svg.append('rect')
                     .attr('fill', 'black')
@@ -93,6 +93,9 @@ class Timings {
                     .attr('stroke', lightGreen)
                     .attr('stroke-width', 1);
 
+                this.data[list[i].name].svg = svg;
+                this.data[list[i].name].root = div;
+                this.data[list[i].name].line = line;
                 root.appendChild(node[0]);
             }
         }
@@ -102,14 +105,16 @@ class Timings {
     }
     
     update(name, state) {
-        console.log('updating ' + name + ' : ' + state);
-        this.data[name].vals.shift();
-        this.data[name].vals.push(state);
+        let dataItem = this.data[name];
+        let root = $(dataItem.root);
+        
+        dataItem.vals.shift();
+        dataItem.vals.push(state);
+
         let renderData = transformData(this.data[name].vals);
-        let svg = this.data[name].svg;
-       /* d3.select(svg)
-            .selectAll('path')
-            .data*/
+        let pathNode = root.find('path');
+
+        pathNode.attr('d', this.data[name].line(renderData));
     }
 }
 
