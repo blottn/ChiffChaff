@@ -10,6 +10,7 @@ const listId = '#sim-items';
 
 let sim;
 let kinds;
+let timings;
 
 function getSelected(selector = $(selectorId)[0]) {
     return selector.options[selector.selectedIndex].value;
@@ -26,11 +27,6 @@ function updateSelector(kinds) {
     }
 }
 
-function selectorChange(evt) {
-    updateSim(getSelected(evt.target));
-    display(sim);
-}
-
 function updateSim(name = getSelected()) {
     if (sim) {
         sim.use(name);
@@ -39,6 +35,11 @@ function updateSim(name = getSelected()) {
         sim = new Sim(name, kinds);
     }
 }
+function selectorChange(evt) {
+    updateSim(getSelected(evt.target));
+    initDisplay(sim);
+}
+
 
 window.onload = function() {
     let ed = editor.init(editorId);
@@ -47,9 +48,11 @@ window.onload = function() {
     ed.setValue(data.sampleVHDL);
     $(selectorId).on('change', selectorChange)
     $('#stepper').click(() => {
-        console.log('step');
         sim.step();
         sim.debug();
+        if (timings) {
+            sim.update(timings);
+        }
     });
 }
 
@@ -59,18 +62,15 @@ function reload(changed) {
     kinds = parse(ed.getValue());
     updateSelector(kinds);
     updateSim();
-    display(sim);
+    initDisplay(sim);
 }
 
-function display(s) {
+function initDisplay(s) {
     let listQuery = $('#sim-items');
     listQuery.empty();
     let list = listQuery[0];
 
     let inputs = s.getInputs();
     let outputs = s.getOutputs();
-    // clear timings first
-    console.log(inputs);
-    console.log(outputs);
-    let timings = new Timings(inputs, outputs, list);
+    timings = new Timings(inputs, outputs, list);
 }

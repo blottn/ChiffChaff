@@ -43,14 +43,10 @@ class Timings {
                     node.find('button').attr('style', 'float:left;display:inline;margin:8px; margin-left:36px;');
                 }
                
-                list[i].onStep((val) => {
-                    console.log(d3.select(div[0]).selectAll('path'));
-                    // append data to node
-                    console.log('called' + list[i].name);
-                });
                 // initial data;
 
-                let tData= transformData(initialData());
+                this.data[list[i].name] = {vals: initialData()};
+                let tData= transformData(this.data[list[i].name].vals);
 
 
                 let yScale = d3.scaleLinear().range([height - margin, margin]);
@@ -85,6 +81,8 @@ class Timings {
                     .attr('height', height)
                     .append('g')
                 
+                this.data[list[i].name].svg = svg;
+
                 svg.append('rect')
                     .attr('fill', 'black')
                     .attr('width', '100%')
@@ -102,7 +100,17 @@ class Timings {
         createNodes(this.inputs, this.rootNode, true);
         createNodes(this.outputs, this.rootNode);
     }
-
+    
+    update(name, state) {
+        console.log('updating ' + name + ' : ' + state);
+        this.data[name].vals.shift();
+        this.data[name].vals.push(state);
+        let renderData = transformData(this.data[name].vals);
+        let svg = this.data[name].svg;
+       /* d3.select(svg)
+            .selectAll('path')
+            .data*/
+    }
 }
 
 module.exports = {
