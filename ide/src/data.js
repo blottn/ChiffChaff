@@ -91,24 +91,24 @@ module.exports = {
     },
 
     ra : {
-        i : {'a':[0,0], 'b':[0,0], 'cin':1},
+        i : {'a':0, 'b':0, 'c':0, 'd':0, 'cin':1},
         o : {'z0':0, 'z1': 0, 'cout':0},
         architecture : {
             internals : {
                 'fa1': {
                     kind : 'fa',
-                    depends : ['a','b','cin'],
-                    input_map : {'a':'a','b':'b','cin':'cin'},
-                    output_map : {'z':'z0','cout':'c'}
+                    depends : ['a','c','cin'],
+                    input_map : {'a':'a','b':'c','cin':'cin'},
+                    output_map : {'z':'z0','cout':'c1'}
                 },
                 'fa2': {
                     kind : 'fa',
-                    depends : ['a', 'b', 'c'],
-                    input_map : {'a':'a','b':'b','cin':'c'},
+                    depends : ['b', 'd', 'c1'],
+                    input_map : {'a':'b','b':'d','cin':'c1'},
                     output_map : {'z':'z1','cout':'cout'}
                 },
             },
-            signals: {'c':0},
+            signals: {'c1':0},
             logic: []
         }
     },

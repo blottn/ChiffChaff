@@ -28,6 +28,7 @@ function updateSelector(kinds) {
 
 function selectorChange(evt) {
     updateSim(getSelected(evt.target));
+    display(sim);
 }
 
 function updateSim(name = getSelected()) {
@@ -47,6 +48,8 @@ window.onload = function() {
     $(selectorId).on('change', selectorChange)
     $('#stepper').click(() => {
         console.log('step');
+        sim.step();
+        sim.debug();
     });
 }
 
@@ -67,5 +70,7 @@ function display(s) {
     let inputs = s.getInputs();
     let outputs = s.getOutputs();
     // clear timings first
+    console.log(inputs);
+    console.log(outputs);
     let timings = new Timings(inputs, outputs, list);
 }

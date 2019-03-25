@@ -1,3 +1,4 @@
+let data = require('./data.js');
 function graph(ent, kinds) {
     this.ent = ent;
     
@@ -139,14 +140,21 @@ function node(opts) {
     
     this.children = [];
     this.parents = {};
+    this.callback;
 
     this.step = function() {
         this.state = this.logic(this.parents);
+        if (this.callback)
+            this.callback(this.state);
         return this.children;
     }
 
     this.toString = function() {
         return '' + this.id + ' ' + this.name + ' ' + this.state + '\n';
+    }
+
+    this.onStep = function(callback) {
+        this.callback = callback;
     }
 }
 
@@ -161,6 +169,7 @@ class Sim{
         this.name = name;
         if (name in this.ctx) {
             this.graph = new graph(ctx[name], ctx);
+            this.graph.restim();
         }
     }
 
@@ -172,7 +181,12 @@ class Sim{
         console.log('using: ' + name);
         if (name in this.ctx) {
             this.graph = new graph(this.ctx[name], this.ctx);
+            this.graph.restim();
         }
+    }
+
+    debug() {
+        console.log(this.graph.nodes);
     }
 
     getInputs() {
@@ -183,6 +197,17 @@ class Sim{
         return Object.keys(this.graph.ent.o).map(getter.bind(this));
     }
 }
+
+/*let g = new graph(data.ra, data);
+let nodes = g.nodes;
+let keys = Object.keys(nodes);
+for (var i = 0; i < keys.length; i++) {
+    let n = g.nodes[keys[i]];
+    console.log(n.name);
+    console.log(n.children.reduce((a, n) => {return a + ' ' + n.name + ' ' + n.id}, ''));
+    console.log('');
+} debug stuff TODO remove*/ 
+
 
 module.exports = {
     Sim: Sim

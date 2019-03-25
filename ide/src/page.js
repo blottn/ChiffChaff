@@ -30,11 +30,15 @@ class Timings {
                 let name = node.find('span');
                 let div = node.find('div');
                 name.text(list[i].name);
-                
+
                 if (flipOpts) {
                     node.find('button').attr('style', 'float:left;display:inline;margin:8px; margin-left:36px;');
                 }
                
+                list[i].onStep((val) => {
+                    console.log('called' + list[i].name);
+                });
+
                 let data = transformData([0,1,1,1,0,0,1,0]);
 
                 let yScale = d3.scaleLinear().range([height - margin, margin]);
