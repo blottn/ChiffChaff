@@ -18,12 +18,20 @@ function transformData(list) {
     return list.map((item, index) => {return {x: index, y: item};});
 }
 
+function initialData() {
+    let data = [];
+    for (let i = 0; i < 10; i++) {
+        data.push(0);
+    }
+    return data;
+}
+
 class Timings {
     constructor(inputs, outputs, root) {
         this.inputs = inputs;
         this.outputs = outputs;
         this.rootNode = root;
-
+        this.data = {};
         let createNodes = (list, root, flipOpts) => {
             for (let i = 0 ; i < list.length ; i++) {
                 let node = $(itemBase);
@@ -36,30 +44,30 @@ class Timings {
                 }
                
                 list[i].onStep((val) => {
+                    console.log(d3.select(div[0]).selectAll('path'));
+                    // append data to node
                     console.log('called' + list[i].name);
                 });
+                // initial data;
 
-                let data = transformData([0,1,1,1,0,0,1,0]);
+                let tData= transformData(initialData());
+
 
                 let yScale = d3.scaleLinear().range([height - margin, margin]);
                 let xScale = d3.scaleLinear().range([margin,width - margin]);
                 
                 let xAxis = d3.axisBottom()
                     .scale(xScale)
-                    .ticks(data.length);
+                    .ticks(tData.length);
 
                 let yAxis = d3.axisLeft()
                     .scale(yScale)
-                    .ticks(data.length);
+                    .ticks(tData.length);
                 
                 // scale data
-                xScale.domain(d3.extent(data, (d) => d.x));
+                xScale.domain(d3.extent(tData, (d) => d.x));
                 
-                yScale.domain([0, 
-                    d3.max(data, function (d) {
-                        return d.y;
-                    })
-                ]);
+                yScale.domain([0,1]) 
 
                 let line = d3.line()
                     .x((d) => {
@@ -83,7 +91,7 @@ class Timings {
                     .attr('height', '100%');
 
                 svg.append('path')
-                    .attr('d', line(data))
+                    .attr('d', line(tData))
                     .attr('stroke', lightGreen)
                     .attr('stroke-width', 1);
 
