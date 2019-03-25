@@ -27,20 +27,27 @@ function initialData() {
 }
 
 class Timings {
-    constructor(inputs, outputs, root) {
+    constructor(inputs, outputs, root, sim) {
+        this.sim = sim;
         this.inputs = inputs;
         this.outputs = outputs;
         this.rootNode = root;
         this.data = {};
-        let createNodes = (list, root, flipOpts) => {
+
+        let createNodes = (list, root, flippable) => {
             for (let i = 0 ; i < list.length ; i++) {
                 let node = $(itemBase);
                 let name = node.find('span');
                 let div = node.find('div');
                 name.text(list[i].name);
 
-                if (flipOpts) {
-                    node.find('button').attr('style', 'float:left;display:inline;margin:8px; margin-left:36px;');
+                if (flippable) {
+                    node.find('button')
+                        .attr('style', 'float:left;display:inline;margin:8px; margin-left:36px;')
+                    node.click(() => {
+                        list[i].state = list[i].state ^ 1;
+                        this.sim.flipped(list[i]);
+                    });
                 }
                
                 // initial data;
@@ -105,6 +112,7 @@ class Timings {
     }
     
     update(name, state) {
+        console.log('updating ' + name + ' ' + state);
         let dataItem = this.data[name];
         let root = $(dataItem.root);
         

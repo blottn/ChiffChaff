@@ -69,5 +69,5 @@ function initDisplay(s) {
 
     let inputs = s.getInputs();
     let outputs = s.getOutputs();
-    timings = new Timings(inputs, outputs, list);
+    timings = new Timings(inputs, outputs, list, sim);
 }

@@ -103,6 +103,17 @@ function graph(ent, kinds) {
         return this.frontier;
     }
 
+    this.flipped = function(node) {
+        console.log('destablizing: ' + node.name);
+        console.log(this.frontier.map(stateName));
+        let nf = this.frontier.map(n => n);
+        if (!(nf.includes(node))) {
+            nf.push(node)
+        }
+        console.log(nf.map(stateName));
+        this.frontier = nf;
+    }
+
     this.restim = () => { // adds children of inputs to frontier
         this.frontier = this.frontier.concat(this.inputs
                                 .map((input) => input.children)
@@ -203,6 +214,10 @@ class Sim{
             .map((node) => {
                 timings.update(node.name, node.state);
             });
+    }
+
+    flipped(node) {
+        this.graph.flipped(node);
     }
 }
 
