@@ -197,17 +197,35 @@ class Sim{
         return Object.keys(this.graph.ent.o).map(getter.bind(this));
     }
 }
+/*
+function stateName(n) {
+    return n.name + ': ' + n.state;
+}
 
-/*let g = new graph(data.ra, data);
+let g = new graph(data.ra, data);
+console.log(Object.values(g.nodes).map(stateName));
+g.nodes['a'].state = 1;
+console.log(Object.values(g.nodes).map(stateName));
+g.restim();
+console.log(Object.values(g.nodes).map(stateName));
+g.step();
+console.log(Object.values(g.nodes).map(stateName));
+g.step();
+g.step();
+g.step();
+g.step();
+g.step();
 let nodes = g.nodes;
 let keys = Object.keys(nodes);
 for (var i = 0; i < keys.length; i++) {
     let n = g.nodes[keys[i]];
-    console.log(n.name);
-    console.log(n.children.reduce((a, n) => {return a + ' ' + n.name + ' ' + n.id}, ''));
-    console.log('');
-} debug stuff TODO remove*/ 
+  //  console.log(n.name);
+ //   console.log(n.children.reduce((a, n) => {return a + ' ' + n.name + ' ' + n.id}, ''));
+   // console.log('');
+}
 
+TODO remove this debug stuff
+*/
 
 module.exports = {
     Sim: Sim
