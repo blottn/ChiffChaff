@@ -186,7 +186,7 @@ class Sim{
     }
 
     debug() {
-        console.log(this.graph.nodes);
+        console.log(Object.values(this.graph.nodes).map(stateName));
     }
 
     getInputs() {
@@ -196,12 +196,20 @@ class Sim{
     getOutputs() {
         return Object.keys(this.graph.ent.o).map(getter.bind(this));
     }
+
+    update(timings) {
+        Object.values(this.getInputs())
+            .concat(Object.values(this.getOutputs()))
+            .map((node) => {
+                timings.update(node.name, node.state);
+            });
+    }
 }
-/*
+
 function stateName(n) {
     return n.name + ': ' + n.state;
 }
-
+/*
 let g = new graph(data.ra, data);
 console.log(Object.values(g.nodes).map(stateName));
 g.nodes['a'].state = 1;
