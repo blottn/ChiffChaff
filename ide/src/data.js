@@ -6,7 +6,7 @@ const vhdl = `entity full_adder is Port (
     Cin : in STD_LOGIC;
     S : out STD_LOGIC;
     Cout : out STD_LOGIC);
-end full_adder_vhdl_code;
+end full_adder;
 
 architecture gate_level of full_adder is
 
