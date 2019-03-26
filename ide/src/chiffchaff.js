@@ -42,7 +42,6 @@ window.onload = function() {
     $(selectorId).on('change', selectorChange)
     $('#stepper').click(() => {
         sim.step();
-        sim.debug();
         if (timings) {
             sim.update(timings);
         }

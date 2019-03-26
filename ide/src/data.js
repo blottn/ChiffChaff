@@ -1,6 +1,6 @@
 // TODO delete
 // File of test data
-const vhdl = `entity full_adder_vhdl_code is Port (
+const vhdl = `entity full_adder is Port (
     A : in STD_LOGIC;
     B : in STD_LOGIC;
     Cin : in STD_LOGIC;
@@ -8,7 +8,7 @@ const vhdl = `entity full_adder_vhdl_code is Port (
     Cout : out STD_LOGIC);
 end full_adder_vhdl_code;
 
-architecture gate_level of full_adder_vhdl_code is
+architecture gate_level of full_adder is
 
 begin
 
@@ -17,7 +17,7 @@ Cout <= (A AND B) OR (Cin AND A) OR (Cin AND B) ;
 
 end gate_level;
 
-entity Ripple_Adder is Port (
+entity ripple_adder is Port (
     A : in STD_LOGIC;
     B : in STD_LOGIC;
     C : in STD_LOGIC;
@@ -26,12 +26,12 @@ entity Ripple_Adder is Port (
     Y : out STD_LOGIC;
     Z : out STD_LOGIC;
     Cout : out STD_LOGIC);
-end Ripple_Adder; -- test in line comment
+end ripple_adder; -- test in line comment
 
-architecture Behavioral of Ripple_Adder is
+architecture Behavioral of ripple_adder is
 
 -- Full Adder VHDL Code Component Decalaration
-component full_adder_vhdl_code Port (
+component full_adder Port (
     A : in STD_LOGIC;
     B : in STD_LOGIC;
     Cin : in STD_LOGIC;
@@ -44,9 +44,9 @@ signal c1 : STD_LOGIC;
 
 begin
 
--- Port Mapping Full Adder 4 times
-FA1: full_adder_vhdl_code port map( A, C, Cin, Y, c1);
-FA2: full_adder_vhdl_code port map( B, D, c1, Z, Cout);
+-- Port Mapping Full Adder 2 times
+FA1: full_adder port map( A, C, Cin, Y, c1);
+FA2: full_adder port map( B, D, c1, Z, Cout);
 
 end Behavioral;`
 

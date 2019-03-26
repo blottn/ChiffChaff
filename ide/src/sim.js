@@ -1,4 +1,3 @@
-let data = require('./data.js');
 function graph(ent, kinds) {
     this.ent = ent;
     
@@ -104,13 +103,10 @@ function graph(ent, kinds) {
     }
 
     this.flipped = function(node) {
-        console.log('destablizing: ' + node.name);
-        console.log(this.frontier.map(stateName));
         let nf = this.frontier.map(n => n);
         if (!(nf.includes(node))) {
             nf.push(node)
         }
-        console.log(nf.map(stateName));
         this.frontier = nf;
     }
 
@@ -224,31 +220,6 @@ class Sim{
 function stateName(n) {
     return n.name + ': ' + n.state;
 }
-/*
-let g = new graph(data.ra, data);
-console.log(Object.values(g.nodes).map(stateName));
-g.nodes['a'].state = 1;
-console.log(Object.values(g.nodes).map(stateName));
-g.restim();
-console.log(Object.values(g.nodes).map(stateName));
-g.step();
-console.log(Object.values(g.nodes).map(stateName));
-g.step();
-g.step();
-g.step();
-g.step();
-g.step();
-let nodes = g.nodes;
-let keys = Object.keys(nodes);
-for (var i = 0; i < keys.length; i++) {
-    let n = g.nodes[keys[i]];
-  //  console.log(n.name);
- //   console.log(n.children.reduce((a, n) => {return a + ' ' + n.name + ' ' + n.id}, ''));
-   // console.log('');
-}
-
-TODO remove this debug stuff
-*/
 
 module.exports = {
     Sim: Sim

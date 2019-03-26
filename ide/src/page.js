@@ -120,7 +120,6 @@ class Timings {
     }
     
     update(name, state) {
-        console.log('updating ' + name + ' ' + state);
         let dataItem = this.data[name];
         let root = $(dataItem.root);
         
