@@ -24,23 +24,19 @@ function updateSelector(kinds) {
     }
 }
 
-function updateSim(name = getSelected()) {
-    if (sim) {
-        sim.use(name);
-    }
-    else if (kinds) {
-        sim = new Sim(name, kinds);
-    }
+function updateSim(kinds, name = getSelected()) {
+    sim = new Sim(name, kinds);
 }
+
 function selectorChange(evt) {
-    updateSim(getSelected(evt.target));
+    updateSim(kinds, getSelected(evt.target));
     initDisplay(sim);
 }
 
 
 window.onload = function() {
     let ed = editor.init(editorId);
-    ed.on('change', reload)
+    ed.on('input', reload)
     
     ed.setValue(data.sampleVHDL);
     $(selectorId).on('change', selectorChange)
@@ -54,12 +50,21 @@ window.onload = function() {
 }
 
 function reload(changed) {
-    console.log('reloaded');
     let ed = editor.get(editorId);
     kinds = parse(ed.getValue());
     updateSelector(kinds);
-    updateSim();
+    updateSim(kinds);
     initDisplay(sim);
+}
+
+function updateTimings(s) {
+    let listQuery = $('#sim-items');
+    listQuery.empty();
+    let list = listQuery[0];
+
+    let inputs = s.getInputs();
+    let outputs = s.getOutputs();
+    timings = new Timings(inputs, outputs, list, sim);
 }
 
 function initDisplay(s) {
