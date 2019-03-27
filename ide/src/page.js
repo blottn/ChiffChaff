@@ -1,10 +1,21 @@
 const itemBase = `<li class="list-group-item">
-        <span style="display: inline; float: left;">Name</span>
-        <button type="button" class="btn btn-info" style="margin:8px;display:none;">
+    <div class="container" style="padding:0px;">
+    <div class="row" style="height:10%">
+    <div class="col-sm-2">
+        <p id="name" style="display: inline; float: left;">Name</p>
+    </div>
+    <div class="col-sm-2">
+        <button type="button" class="btn btn-info" style="display:none;">
             Flip
         </button>
-        <div height="50px;" style="display: inline; float: right;">
+    </div>
+    <div class="col-sm-8">
+        <div id="svg-root" height="50px;" style="display: block;">
         </div>
+        <p>T &rarr;</p>
+    </div>
+    </div>
+    </div>
     </li>`;
 
 const width = 250;
@@ -36,13 +47,13 @@ class Timings {
         let createNodes = (list, root, flippable) => {
             for (let i = 0 ; i < list.length ; i++) {
                 let node = $(itemBase);
-                let name = node.find('span');
-                let div = node.find('div');
+                let name = node.find('#name');
+                let div = node.find('#svg-root');
                 name.text(list[i].name);
 
                 if (flippable) {
                     node.find('button')
-                        .attr('style', 'float:left;display:inline;margin:8px; margin-left:36px;')
+                        .attr('style', 'float:left;display:inline;')
                     node.click(() => {
                         list[i].state = list[i].state ^ 1;
                         this.sim.flipped(list[i]);
