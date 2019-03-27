@@ -147,6 +147,13 @@ let notable_item;
 notable_item = not.then('\\s+', ignore).then(notable_item)
     .or(item)
     .listen((r) => {
+        if (r.ast.left === 'NOT') {
+            return {
+                invert: true,
+                val: r.ast.right
+            };
+        }
+        return r.ast;
         if (r.ast.type && r.ast.type === 'ident') {
             return r.ast;
         }
@@ -188,6 +195,7 @@ expr = notable_item.then(
         let current;
         for (current = tree; current.left != undefined; current = current.left) {}
         current.left = res.ast.left;
+        console.log(tree);
         if (!tree.right)
             return tree.left;
         return tree;

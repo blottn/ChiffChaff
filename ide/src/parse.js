@@ -102,7 +102,7 @@ function buildPreStats(ent, preStats) {
 
 function flattenExpr(tree) {
     if (tree.invert) {
-        return '1^' + flattenExpr(tree.val);
+        return '(1^' + flattenExpr(tree.val) + ')';
     }
     if (tree.combiner) {
         return '( ' + flattenExpr(tree.left)
