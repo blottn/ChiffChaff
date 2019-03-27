@@ -319,7 +319,4 @@ const program = entity.or('\\s+', (r) => {
 });
 
 
-module.exports = {
-    program : program,
-    expr : expr
-};
+module.exports = program;

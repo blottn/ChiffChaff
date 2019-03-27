@@ -102,7 +102,7 @@ function buildPreStats(ent, preStats) {
 
 function flattenExpr(tree) {
     if (tree.invert) {
-        return '!' + flattenExpr(tree.val);
+        return '1^' + flattenExpr(tree.val);
     }
     if (tree.combiner) {
         return '( ' + flattenExpr(tree.left)
@@ -120,6 +120,9 @@ function findDependencies(tree) {
     if (tree.combiner) {
         return findDependencies(tree.left).concat(findDependencies(tree.right));
     }
+    else if (tree.invert) {
+        return findDependencies(tree.val);
+    }
     else {
         return [tree.name];
     }
@@ -133,6 +136,7 @@ function buildPostStats(ctx, postStats) {
             let step = stat;
             let depends = findDependencies(step.rhs);
             let exprString = flattenExpr(step.rhs);
+            console.log(exprString);
             let expr = exprString.replace(/AND/g, ' && ')
                 .replace(/XOR/g, ' ^ ')
                 .replace(/NOT/g, ' ! ')
@@ -143,6 +147,7 @@ function buildPostStats(ctx, postStats) {
                         + '.state' 
                         + (index ? '[' + index + ']' : '');
                 });
+            console.log(expr);
             ent.architecture.logic[step.lhs] = {
                 depends: Array.from(new Set(depends)),
                 combiner: new Function('inputs', 'return ' + expr + ' ;')
