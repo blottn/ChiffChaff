@@ -104,9 +104,11 @@ function graph(ent, kinds) {
 
     this.flipped = function(node) {
         let nf = this.frontier.map(n => n);
-        if (!(nf.includes(node))) {
-            nf.push(node)
-        }
+        node.children.map((c) => {
+            if (!(nf.includes(c))) {
+                nf.push(c);
+            }
+        });
         this.frontier = nf;
     }
 

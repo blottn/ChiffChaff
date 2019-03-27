@@ -11,7 +11,6 @@ const width = 250;
 const height = 32;
 const margin = 4;
 const lightGreen = '#17a2b8';
-               
 
 
 function transformData(list) {
@@ -79,7 +78,7 @@ class Timings {
                     .y((d) => {
                         return yScale(d.y);
                     })
-                    .curve(d3.curveStepBefore);
+                    .curve(d3.curveStepAfter);
                 
 
                 let svg = d3.select(div[0])
@@ -123,8 +122,8 @@ class Timings {
         let dataItem = this.data[name];
         let root = $(dataItem.root);
         
-        dataItem.vals.shift();
-        dataItem.vals.push(state);
+        dataItem.vals.unshift(state);
+        dataItem.vals.pop();
 
         let renderData = transformData(this.data[name].vals);
         let pathNode = root.find('path');
