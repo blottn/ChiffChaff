@@ -5,7 +5,6 @@ const itemBase = `<li class="list-group-item">
         <div class="row" style="height:auto">
             <div class="col-sm-7">
                 <p id="name" style="display: inline; float: left;">A</p>
-                <p style="display: inline;">:</p>
             </div>
             <div class="col-5" style="">
         	    <div style="background-color:black;border-radius: 4px;text-align: center;">
@@ -60,7 +59,7 @@ class Timings {
                 let name = node.find('#name');
                 let state = node.find('#state');
                 let div = node.find('#svg-root');
-                name.text(list[i].name);
+                name.text(list[i].name + ':');
                 state.text(list[i].state);
                 if (flippable) {
                     node.find('button')
