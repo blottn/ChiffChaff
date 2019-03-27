@@ -97,6 +97,7 @@ function graph(ent, kinds) {
                 }
             });
         });
+        this.frontier.map((node) => node.changeState());
         // return the items in the frontier that changed
         this.frontier = nf;
         return this.frontier;
@@ -152,10 +153,16 @@ function node(opts) {
     this.callback;
 
     this.step = function() {
-        this.state = this.logic(this.parents);
+        this.nextState = this.logic(this.parents);
         if (this.callback)
             this.callback(this.state);
         return this.children;
+    }
+
+    this.changeState = function() {
+        if (this.nextState != undefined) {
+            this.state = this.nextState;
+        }
     }
 
     this.toString = function() {
@@ -196,6 +203,7 @@ class Sim{
 
     debug() {
         console.log(Object.values(this.graph.nodes).map(stateName));
+        console.log(this.graph.frontier.map(stateName));
     }
 
     getInputs() {
