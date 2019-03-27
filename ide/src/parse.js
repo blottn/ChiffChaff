@@ -101,6 +101,9 @@ function buildPreStats(ent, preStats) {
 }
 
 function flattenExpr(tree) {
+    if (tree.invert) {
+        return '!' + flattenExpr(tree.val);
+    }
     if (tree.combiner) {
         return '( ' + flattenExpr(tree.left)
             + ' '
@@ -176,5 +179,8 @@ function parse(txt) {
     //let g = new graph(sim_item, kinds);
     //g.restim();
 }
+
+//console.log(flattenExpr(program.expr.parse('a OR NOT (a AND b)').ast));
+
 
 module.exports = parse;

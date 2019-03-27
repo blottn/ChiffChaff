@@ -138,13 +138,35 @@ let operator = new Terminal('\\s+').then('XOR', r => r.ast.right)
     .or(new Terminal('\\s+').then('XOR', r => r.ast.right))
     .or(new Terminal('\\s+').then('OR', r => r.ast.right));
 
+let not = new Terminal('NOT');
+
 let item = ident
     .or(new Terminal('\\(').then(expr, r => r.ast.right).then('\\)',ignore));
 
-expr = item.then(
+let notable_item;
+notable_item = not.then('\\s+', ignore).then(notable_item)
+    .or(item)
+    .listen((r) => {
+        if (r.ast.type && r.ast.type === 'ident') {
+            return r.ast;
+        }
+        else if (r.ast.combiner) {
+            return r.ast;
+        }
+        else {
+            return {
+                invert: true,
+                val: r.ast.right
+            };
+        }
+    });
+
+notable_item.first.second = notable_item;
+
+expr = notable_item.then(
     operator
         .then('\\s+', ignore)
-        .then(item, (r) => {
+        .then(notable_item, (r) => {
             return {
                 combiner: r.ast.left,
                 left: undefined,
@@ -166,11 +188,15 @@ expr = item.then(
         let current;
         for (current = tree; current.left != undefined; current = current.left) {}
         current.left = res.ast.left;
+        if (!tree.right)
+            return tree.left;
         return tree;
     });
 
-item.second.first.second = expr; //quietly ignore this please
+//item.second.first.second = expr; //quietly ignore this please
 
+//expr.first.second.first.second = expr;
+item.second.first.second = expr;
 const combinatorial_stat = new Terminal('\\s*')
     .then(ident, r => r.ast.right)
     .then('\\s*<=\\s*', ignore)
@@ -292,4 +318,8 @@ const program = entity.or('\\s+', (r) => {
     return r.ast.filter((item) => item.type !== 'white');
 });
 
-module.exports = program
+
+module.exports = {
+    program : program,
+    expr : expr
+};
