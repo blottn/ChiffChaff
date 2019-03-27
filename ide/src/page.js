@@ -30,7 +30,6 @@ const itemBase = `<li class="list-group-item">
 const width = 250;
 const height = 32;
 const margin = 4;
-const lightGreen = '#17a2b8';
 
 
 function transformData(list) {
@@ -125,9 +124,9 @@ class Timings {
                 
                 svg.append('path')
                     .attr('d', line(tData))
-                    .attr('stroke', lightGreen)
+                    .attr('stroke', "yellow")
                     .attr('fill', '#66666600')
-                    .attr('stroke-width', 1.5);
+                    .attr('stroke-width', 2.5);
 
                 this.data[list[i].name].svg = svg;
                 this.data[list[i].name].root = node;
