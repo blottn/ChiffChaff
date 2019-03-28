@@ -11,7 +11,7 @@ signal q, nq : STD_LOGIC;
 signal ps, pr : STD_LOGIC;
 begin
 
-O <= O;
+O <= q;
 q <= (NOT R) AND (NOT nq);
 nq <= (NOT S) AND (NOT q);
 
