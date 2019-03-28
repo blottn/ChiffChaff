@@ -38,7 +38,7 @@ window.onload = function() {
     let ed = editor.init(editorId);
     ed.on('input', reload)
     
-    ed.setValue(data.sampleVHDL);
+    ed.setValue(data.sampleVHDL,1);
     $(selectorId).on('change', selectorChange)
     $('#stepper').click(() => {
         sim.step();
