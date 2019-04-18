@@ -136,7 +136,6 @@ function buildPostStats(ctx, postStats) {
             let step = stat;
             let depends = findDependencies(step.rhs);
             let exprString = flattenExpr(step.rhs);
-            console.log(exprString);
             let expr = exprString.replace(/AND/g, ' && ')
                 .replace(/XOR/g, ' ^ ')
                 .replace(/NOT/g, ' ! ')
@@ -147,7 +146,6 @@ function buildPostStats(ctx, postStats) {
                         + '.state' 
                         + (index ? '[' + index + ']' : '');
                 });
-            console.log(expr);
             ent.architecture.logic[step.lhs] = {
                 depends: Array.from(new Set(depends)),
                 combiner: new Function('inputs', 'return ' + expr + ' ;')
@@ -179,13 +177,6 @@ function buildPostStats(ctx, postStats) {
 
 function parse(txt) {
     return build(program.parse(strip(txt)).ast);
-    
-    //let sim_item = kinds[Object.keys(kinds)[1]];
-    //let g = new graph(sim_item, kinds);
-    //g.restim();
 }
-
-//console.log(flattenExpr(program.expr.parse('a OR NOT (a AND b)').ast));
-
 
 module.exports = parse;

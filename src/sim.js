@@ -194,7 +194,6 @@ class Sim{
     }
 
     use(name) {
-        console.log('using: ' + name);
         if (name in this.ctx) {
             this.graph = new graph(this.ctx[name], this.ctx);
             this.graph.restim();

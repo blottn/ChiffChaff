@@ -205,7 +205,6 @@ expr = notable_item.then(
         let current;
         for (current = tree; current.left != undefined; current = current.left) {}
         current.left = res.ast.left;
-        console.log(tree);
         if (!tree.right)
             return tree.left;
         return tree;
