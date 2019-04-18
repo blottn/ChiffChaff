@@ -12,34 +12,41 @@ let sim;
 let kinds;
 let timings;
 
-function getSelected(selector = $(selectorId)[0]) {
+// helper for getting the current item in the selector
+function getSelected(selector = $(selectorId)[0]) { // default selector param
     return selector.options[selector.selectedIndex].value;
 }
 
+// update values in the selector given this set of parsed entities
 function updateSelector(kinds) {
     let select = $(selectorId)[0];
-    $(select).empty();
-    for (name of Object.keys(kinds)) {
+    $(select).empty(); // clear
+    for (name of Object.keys(kinds)) { // for each, create a new selector option
         select.add(new Option(name, name));
     }
 }
 
+// update the simulator with a new set of objects
 function updateSim(kinds, name = getSelected()) {
     sim = new Sim(name, kinds);
 }
 
+// on the selector selecting a new item
 function selectorChange(evt) {
     updateSim(kinds, getSelected(evt.target));
-    initDisplay(sim);
+    initDisplay(sim); // init visualiser
 }
 
 
 window.onload = function() {
+    // initialise editor
     let ed = editor.init(editorId);
+
+    // setup listeners
     ed.on('input', reload)
-    
-    ed.setValue(data.sampleVHDL,1);
+
     $(selectorId).on('change', selectorChange)
+
     $('#stepper').click(() => {
         sim.step();
         sim.debug();
@@ -47,32 +54,27 @@ window.onload = function() {
             sim.update(timings);
         }
     });
+
+    ed.setValue(data.sampleVHDL,1); // set initial data
+
 }
 
+// called on code changing
 function reload(changed) {
     let ed = editor.get(editorId);
-    kinds = parse(ed.getValue());
-    updateSelector(kinds);
-    updateSim(kinds);
-    initDisplay(sim);
+    kinds = parse(ed.getValue()); // reparse data
+    updateSelector(kinds); // update selector wheel
+    updateSim(kinds); // update simulator
+    initDisplay(sim); // initialise visualiser
 }
 
-function updateTimings(s) {
+// initialise display of simulator
+function initDisplay(simulator) {
     let listQuery = $('#sim-items');
     listQuery.empty();
     let list = listQuery[0];
 
-    let inputs = s.getInputs();
-    let outputs = s.getOutputs();
-    timings = new Timings(inputs, outputs, list, sim);
-}
-
-function initDisplay(s) {
-    let listQuery = $('#sim-items');
-    listQuery.empty();
-    let list = listQuery[0];
-
-    let inputs = s.getInputs();
-    let outputs = s.getOutputs();
-    timings = new Timings(inputs, outputs, list, sim);
+    let inputs = simulator.getInputs();
+    let outputs = simulator.getOutputs();
+    timings = new Timings(inputs, outputs, list, simulator);
 }
