@@ -1,3 +1,11 @@
+/*  Filename: chiffchaff.js
+    Directory: src/
+    Author: Nicholas Blott
+    Email: blottn@tcd.ie
+    Description: The simulator, creates a graph representing the VHDL 
+                 entity to be simulated.
+*/
+
 function graph(ent, kinds) {
     this.ent = ent;
     

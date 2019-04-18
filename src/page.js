@@ -1,3 +1,11 @@
+/*  Filename: chiffchaff.js
+    Directory: src/
+    Author: Nicholas Blott
+    Email: blottn@tcd.ie
+    Description: The visualiser, renders the timing diagrams and
+                 controls the simulator.
+*/
+
 const itemBase = `<li class="list-group-item">
     <div class="container" style="padding:0px;">
     <div class="row" style="height:10%">

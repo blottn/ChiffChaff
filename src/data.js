@@ -1,3 +1,11 @@
+/*  Filename: data.js
+    Directory: src/
+    Author: Nicholas Blott
+    Email: blottn@tcd.ie
+    Description: A collection of test and sample data for filling the webpage.
+*/
+
+
 // File of test data
 const vhdl = `entity full_adder is Port (
     A : in STD_LOGIC;

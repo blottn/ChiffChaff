@@ -1,3 +1,11 @@
+/*  Filename: grammar.js
+    Directory: src/
+    Author: Nicholas Blott
+    Email: blottn@tcd.ie
+    description: The core VHDL parser.
+*/
+
+
 const {Terminal : Terminal, Empty: Empty} = require('vernac');
 
 class Ident {

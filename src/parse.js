@@ -1,3 +1,10 @@
+/*  Filename: chiffchaff.js
+    Directory: src/
+    Author: Nicholas Blott
+    Email: blottn@tcd.ie
+    Description: The parser's second pass, converts the ast into something usable.
+*/
+
 const program = require('./grammar.js');
 const {Sim : Sim} = require('./sim.js');
 

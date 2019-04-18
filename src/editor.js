@@ -1,4 +1,9 @@
-// A collection of utility functions for manupulating the editor
+/*  Filename: editor.js
+    Directory: src/
+    Author: Nicholas Blott
+    Email: blottn@tcd.ie
+    Description: A collection of utility functions for manipulating the editor.
+*/
 
 function init(id) {
     var editor = ace.edit(id);

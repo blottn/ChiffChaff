@@ -1,3 +1,11 @@
+/*  Filename: chiffchaff.js
+    Directory: src/
+    Author: Nicholas Blott
+    Email: blottn@tcd.ie
+    Description: The root script that is injected into the webpage,
+                 links together all other scripts.
+*/
+
 const parse = require('./parse.js');
 const {Sim: Sim} = require('./sim.js');
 const editor = require('./editor.js');
