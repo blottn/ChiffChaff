@@ -1,4 +1,3 @@
-const ast = require('./ast.js');
 const {Terminal : Terminal, Empty: Empty} = require('vernac');
 
 class Ident {
@@ -13,7 +12,13 @@ const one_space = new Terminal('\\s+');
 const zero_space = new Terminal('\\s*');
 
 // primitive items
-const ident = new Terminal('[A-Za-z]+\\w*', ast.Ident.builder);
+const ident = new Terminal('[A-Za-z]+\\w*', (r) => {
+    return {
+        type: 'type',
+        name: r.result,
+    };
+});
+
 const indexed = ident
     .then(new Terminal('\\s*')
         .then('\\(')
@@ -32,7 +37,12 @@ const indexed = ident
 
 
 
-const direction = new Terminal('in').or(new Terminal('out'), ast.Dir.builder);
+const direction = new Terminal('in').or(new Terminal('out'), (r) => {
+    return {
+        type: 'dir',
+        dir: r.result
+    };
+});
 const logic_type = new Terminal('STD_LOGIC', (r) => {
     return {
         type: 'logic'
