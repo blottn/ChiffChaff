@@ -1,19 +1,8 @@
-function save(data, f_name) {
-    let download_anchor = document.createElement('a');
-
-    document.body.appendChild(download_anchor);
-    
-    let blob = 'data:text/plain;charset=utf-8,' + encodeURIComponent(data);
-    download_anchor.setAttribute('href', blob);
-    download_anchor.setAttribute('download', f_name)
-    
-    download_anchor.click();
-
-    document.body.removeChild(download_anchor);
-}
+// A collection of utility functions for manupulating the editor
 
 function init(id) {
     var editor = ace.edit(id);
+    // set theme and highlighter
     editor.setTheme("ace/theme/monokai");
     let session = editor.getSession();
     session.setMode("ace/mode/vhdl");
@@ -21,12 +10,11 @@ function init(id) {
     return editor;
 }
 
-function getEditor(id) {
+function getEditor(id) { // wrapper for nice syntax
     return ace.edit(id);
 }
 
 module.exports = {
     init: init,
-    get: getEditor,
-    save: save
+    get: getEditor
 }

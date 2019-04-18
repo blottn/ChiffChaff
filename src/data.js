@@ -1,4 +1,3 @@
-// TODO delete
 // File of test data
 const vhdl = `entity full_adder is Port (
     A : in STD_LOGIC;
@@ -52,7 +51,7 @@ end Behavioral;`
 
 
 module.exports = {
-    ha : {
+/*    ha : {
         i : {'a':1, 'b':1},
         o : {'s':0, 'c':0},
         architecture : {
@@ -145,6 +144,6 @@ module.exports = {
             }
         }
     },
-
+*/
     sampleVHDL: vhdl
 };
