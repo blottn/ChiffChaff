@@ -55,6 +55,8 @@ function graph(ent, kinds) {
     // generate the sub entities
     Object.keys(ent.architecture.internals || {}).map((name) => {
         let descriptor = ent.architecture.internals[name];
+        
+        // create sub graph
         this.sub_ents[name] = new graph(kinds[descriptor.kind], kinds);
     });
 
@@ -63,7 +65,7 @@ function graph(ent, kinds) {
         let current = this.sub_ents[name];
         let descriptor = ent.architecture.internals[name];
 
-        // tether inputs
+        // tether inputs with nodes in parent graph
         current.inputs = current.inputs.map((input) => {
             let new_node = this.nodes[descriptor.input_map[input.name]];
             new_node.children = new_node.children.concat(input.children);
@@ -74,7 +76,7 @@ function graph(ent, kinds) {
             return new_node;
         });
         
-        // tether outputs
+        // tether outputs with nodes in parent graph
         current.outputs = current.outputs.map((old_out) => {
             let new_node = this.nodes[descriptor.output_map[old_out.name]];
             new_node.parents = old_out.parents;
@@ -94,6 +96,7 @@ function graph(ent, kinds) {
 
     
     
+    // step each node, add their children to a new frontier
     this.step = function() {
         let nf = [];
         this.frontier.map((node) => {
@@ -105,12 +108,16 @@ function graph(ent, kinds) {
                 }
             });
         });
+        
+        // assign new states only after completed a pass
         this.frontier.map((node) => node.changeState());
+        
         // return the items in the frontier that changed
         this.frontier = nf;
         return this.frontier;
     }
 
+    // mark an input as unstable (add children to frontier)
     this.flipped = function(node) {
         let nf = this.frontier.map(n => n);
         node.children.map((c) => {
@@ -128,6 +135,7 @@ function graph(ent, kinds) {
                                 .filter((val, ind, arr) => arr.indexOf(val) == ind));
     }
 
+    // debug
     this.toString = (prefix = '') => {
         let txt = prefix + 'state:\n';
         txt += prefix + 'nodes:\n';
@@ -149,6 +157,7 @@ function graph(ent, kinds) {
 // uhoh globals
 let id = -1;
 
+// node constructor
 function node(opts) {
     this.id = id += 1;
 
@@ -163,7 +172,7 @@ function node(opts) {
     this.step = function() {
         this.nextState = this.logic(this.parents);
         if (this.callback)
-            this.callback(this.state);
+            this.callback(this.state); // callback for visualiser
         return this.children;
     }
 
@@ -173,7 +182,7 @@ function node(opts) {
         }
     }
 
-    this.toString = function() {
+    this.toString = function() { // debugger
         return '' + this.id + ' ' + this.name + ' ' + this.state + '\n';
     }
 
@@ -187,7 +196,8 @@ function getter(key) {
     return this.graph.nodes[key];
 }
 
-class Sim{
+ // wraps graph in some util functions
+class Sim {
     constructor(name, ctx) {
         this.ctx = ctx;
         this.name = name;

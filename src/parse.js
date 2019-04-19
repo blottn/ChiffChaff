@@ -14,6 +14,7 @@ function strip(txt) {
         .join('\n');
 }
 
+// execute second pass of parser
 function build(ast) {
     let kinds = {};
     for (item of ast) {
@@ -71,6 +72,8 @@ function build(ast) {
     return kinds;
 }
 
+
+// build statements from before a begin in an architecture
 function buildPreStats(ent, preStats) {
     let out = {
         ent: ent,
@@ -107,6 +110,7 @@ function buildPreStats(ent, preStats) {
     return out;
 }
 
+// flattens an expression tree into valid js
 function flattenExpr(tree) {
     if (tree.invert) {
         return '(1^' + flattenExpr(tree.val) + ')';
@@ -123,6 +127,7 @@ function flattenExpr(tree) {
     }
 }
 
+// finds names in a tree
 function findDependencies(tree) {
     if (tree.combiner) {
         return findDependencies(tree.left).concat(findDependencies(tree.right));
@@ -135,6 +140,7 @@ function findDependencies(tree) {
     }
 }
 
+// constructs statements after begin in architecture
 function buildPostStats(ctx, postStats) {
     ent = ctx.ent;
     comps = ctx.components;
@@ -153,6 +159,7 @@ function buildPostStats(ctx, postStats) {
                         + '.state' 
                         + (index ? '[' + index + ']' : '');
                 });
+            // construct js from string
             ent.architecture.logic[step.lhs] = {
                 depends: Array.from(new Set(depends)),
                 combiner: new Function('inputs', 'return ' + expr + ' ;')

@@ -6,6 +6,7 @@
                  controls the simulator.
 */
 
+// constants
 const itemBase = `<li class="list-group-item">
     <div class="container" style="padding:0px;">
     <div class="row" style="height:10%">
@@ -40,10 +41,12 @@ const height = 32;
 const margin = 4;
 
 
+// creates array of data
 function transformData(list) {
     return list.map((item, index) => {return {x: index, y: item};});
 }
 
+// array of 0s
 function initialData() {
     let data = [];
     for (let i = 0; i < 10; i++) {
@@ -52,6 +55,7 @@ function initialData() {
     return data;
 }
 
+// wrapper for managing timings
 class Timings {
     constructor(inputs, outputs, root, sim) {
         this.sim = sim;
@@ -60,7 +64,7 @@ class Timings {
         this.rootNode = root;
         this.data = {};
 
-        let createNodes = (list, root, flippable) => {
+        let createNodes = (list, root, flippable) => { // create svgs for each node
             for (let i = 0 ; i < list.length ; i++) {
                 let node = $(itemBase);
                 let name = node.find('#name');
@@ -71,7 +75,7 @@ class Timings {
                 if (flippable) {
                     node.find('button')
                         .attr('style', 'float:left;display:inline;')
-                        .click(() => {
+                        .click(() => { // on click for flip state buttons
                             list[i].state = list[i].state ^ 1;
                             this.sim.flipped(list[i]);
                             state.text(list[i].state);
@@ -147,6 +151,8 @@ class Timings {
         createNodes(this.outputs, this.rootNode);
     }
     
+
+    // change al of the data in the data object
     update(name, state) {
         let dataItem = this.data[name];
         let root = $(dataItem.root);
